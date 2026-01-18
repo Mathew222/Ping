@@ -7,6 +7,8 @@ import 'package:ping/app/theme/ping_theme.dart';
 import 'package:ping/features/reminders/domain/reminder.dart';
 import 'package:ping/features/reminders/domain/recurrence_rule.dart';
 import 'package:ping/features/reminders/presentation/providers/reminders_provider.dart';
+import 'package:ping/features/reminders/presentation/widgets/recurrence_editor.dart';
+import 'package:ping/core/notifications/snooze_picker.dart';
 
 /// Create reminder screen - neumorphic design
 class CreateReminderScreen extends ConsumerStatefulWidget {
@@ -21,9 +23,12 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
   String _selectedFrequency = 'Once';
   TimeOfDay _selectedTime = TimeOfDay.now();
   String? _selectedLocation;
+  int _defaultSnoozeDuration = 10; // Default snooze in minutes
+  RecurrenceRule? _customRecurrenceRule; // Store custom recurrence rule
   bool _isLoading = false;
 
   final _frequencies = ['Once', 'Daily', 'Weekly', 'Custom'];
+  final _snoozeDurations = [5, 10, 15, 20, 30, 45, 60];
 
   @override
   void dispose() {
@@ -96,6 +101,13 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
               ],
             ),
             
+            const SizedBox(height: 32),
+            
+            // Default Snooze Duration section
+            _buildSectionLabel('DEFAULT SNOOZE'),
+            const SizedBox(height: 12),
+            _buildSnoozeDurationPicker(),
+            
             const SizedBox(height: 48),
             
             // Set Reminder button
@@ -158,7 +170,11 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
         return GestureDetector(
           onTap: () {
             HapticFeedback.selectionClick();
-            setState(() => _selectedFrequency = freq);
+            if (freq == 'Custom') {
+              _handleCustomFrequency();
+            } else {
+              setState(() => _selectedFrequency = freq);
+            }
           },
           child: AnimatedContainer(
             duration: 200.ms,
@@ -288,6 +304,149 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
     ).animate().fadeIn(duration: 200.ms, delay: 300.ms).slideY(begin: 0.1, end: 0);
   }
 
+  Widget _buildSnoozeDurationPicker() {
+    return GestureDetector(
+      onTap: _showCustomSnoozeDurationDialog,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        decoration: BoxDecoration(
+          color: PingTheme.cardWhite,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: PingTheme.textSecondary.withAlpha(50),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: PingTheme.shadowDark.withAlpha(25),
+              offset: const Offset(2, 2),
+              blurRadius: 8,
+            ),
+            BoxShadow(
+              color: PingTheme.shadowLight,
+              offset: const Offset(-2, -2),
+              blurRadius: 8,
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: PingTheme.primaryOrange.withAlpha(25),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.snooze,
+                    color: PingTheme.primaryOrange,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Default Snooze Duration',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: PingTheme.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      _formatSnoozeDuration(_defaultSnoozeDuration),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: PingTheme.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            Icon(
+              Icons.edit,
+              color: PingTheme.textSecondary,
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showCustomSnoozeDurationDialog() async {
+    final controller = TextEditingController(text: _defaultSnoozeDuration.toString());
+    
+    final result = await showDialog<int>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Set Default Snooze Duration'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Enter duration in minutes:'),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              keyboardType: TextInputType.number,
+              autofocus: true,
+              decoration: InputDecoration(
+                hintText: 'e.g., 22',
+                suffixText: 'minutes',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [5, 10, 15, 20, 30, 45, 60].map((min) {
+                return ActionChip(
+                  label: Text('$min min'),
+                  onPressed: () {
+                    controller.text = min.toString();
+                  },
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              final value = int.tryParse(controller.text);
+              if (value != null && value > 0 && value <= 1440) {
+                Navigator.pop(context, value);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please enter a valid duration (1-1440 minutes)')),
+                );
+              }
+            },
+            child: const Text('Set'),
+          ),
+        ],
+      ),
+    );
+    
+    if (result != null) {
+      setState(() => _defaultSnoozeDuration = result);
+    }
+  }
+
   Widget _buildNeumorphicButton(IconData icon, {VoidCallback? onTap}) {
     return GestureDetector(
       onTap: onTap,
@@ -331,6 +490,18 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
     // TODO: Implement location picker
   }
 
+  String _formatSnoozeDuration(int minutes) {
+    if (minutes < 60) {
+      return '$minutes min';
+    } else if (minutes == 60) {
+      return '1 hour';
+    } else if (minutes % 60 == 0) {
+      return '${minutes ~/ 60} hours';
+    } else {
+      return '${minutes ~/ 60}h ${minutes % 60}m';
+    }
+  }
+
   Future<void> _createReminder() async {
     if (_titleController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -350,7 +521,11 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
       );
       
       RecurrenceRule? rule;
-      if (_selectedFrequency != 'Once') {
+      if (_selectedFrequency == 'Custom' && _customRecurrenceRule != null) {
+        // Use the custom recurrence rule
+        rule = _customRecurrenceRule;
+      } else if (_selectedFrequency != 'Once') {
+        // Use simple recurrence rule
         rule = RecurrenceRule(
           type: _getRecurrenceType(_selectedFrequency),
           interval: 1,
@@ -367,6 +542,7 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
         triggerAt: actualTriggerTime,
         recurrenceRule: rule,
         priority: ReminderPriority.normal,
+        lastSnoozeDuration: _defaultSnoozeDuration,
       );
 
       debugPrint('CreateReminderScreen: Creating reminder "${reminder.title}" for ${reminder.triggerAt}');
@@ -405,6 +581,64 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
       case 'Weekly': return RecurrenceType.weekly;
       case 'Custom': return RecurrenceType.custom;
       default: return RecurrenceType.daily;
+    }
+  }
+  
+  Future<void> _handleCustomFrequency() async {
+    final now = DateTime.now();
+    final triggerDate = DateTime(
+      now.year, now.month, now.day,
+      _selectedTime.hour, _selectedTime.minute,
+    );
+    
+    final rule = await showModalBottomSheet<RecurrenceRule>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: PingTheme.cardWhite,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: RecurrenceEditor(
+          triggerDate: triggerDate,
+        ),
+      ),
+    );
+    
+    if (rule != null) {
+      setState(() {
+        _selectedFrequency = 'Custom';
+        _customRecurrenceRule = rule; // Store the custom rule
+      });
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Custom recurrence: ${_formatRecurrence(rule)}'),
+            backgroundColor: PingTheme.primaryMint,
+          ),
+        );
+      }
+    }
+  }
+  
+  String _formatRecurrence(RecurrenceRule rule) {
+    switch (rule.type) {
+      case RecurrenceType.daily:
+        return rule.interval == 1 ? 'Daily' : 'Every ${rule.interval} days';
+      case RecurrenceType.weekly:
+        if (rule.daysOfWeek != null && rule.daysOfWeek!.isNotEmpty) {
+          final days = rule.daysOfWeek!.map((d) => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d]).join(', ');
+          return 'Weekly on $days';
+        }
+        return rule.interval == 1 ? 'Weekly' : 'Every ${rule.interval} weeks';
+      case RecurrenceType.monthly:
+        return rule.interval == 1 ? 'Monthly' : 'Every ${rule.interval} months';
+      case RecurrenceType.custom:
+        return 'Every ${rule.customMinutes} minutes';
+      default:
+        return 'Custom';
     }
   }
 }

@@ -137,6 +137,8 @@ class NotificationService {
   }
 
   NotificationDetails _getNotificationDetails(Reminder reminder) {
+    final snoozeDuration = reminder.lastSnoozeDuration ?? _lastSnoozeDuration;
+    
     // Android notification with action buttons
     final androidDetails = AndroidNotificationDetails(
       'ping_reminders',
@@ -155,7 +157,7 @@ class NotificationService {
         ),
         AndroidNotificationAction(
           'snooze',
-          'Snooze $_lastSnoozeDuration min',
+          'Snooze $snoozeDuration min',
           showsUserInterface: false,
         ),
         const AndroidNotificationAction(
