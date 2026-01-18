@@ -1,0 +1,53 @@
+name: ping
+description: Cross-platform reminder app with notification-first UX
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # State Management
+  flutter_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+  
+  # Local Database (temporarily disabled for web)
+  # drift: ^2.14.1
+  # sqlite3_flutter_libs: ^0.5.18
+  path_provider: ^2.1.1
+  path: ^1.8.3
+  
+  # Firebase (requires platform configuration - disabled for web preview)
+  # firebase_core: ^2.24.2
+  # firebase_auth: ^4.16.0
+  # cloud_firestore: ^4.14.0
+  # firebase_messaging: ^14.7.9
+  
+  # Notifications
+  flutter_local_notifications: ^19.5.0
+  
+  # UI/UX
+  google_fonts: ^6.1.0
+  flutter_animate: ^4.3.0
+  
+  # Utilities
+  uuid: ^4.2.2
+  intl: ^0.18.1
+  collection: ^1.18.0
+  go_router: ^13.0.0
+  timezone: ^0.10.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  build_runner: ^2.4.8
+  drift_dev: ^2.14.1
+  riverpod_generator: ^2.3.9
+
+flutter:
+  uses-material-design: true
+
