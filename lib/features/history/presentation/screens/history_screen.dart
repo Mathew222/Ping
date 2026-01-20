@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:ping/app/theme/ping_theme.dart';
-import 'package:ping/features/reminders/presentation/widgets/reminder_card.dart';
-import 'package:ping/features/reminders/domain/reminder.dart';
 
 /// History screen - shows completed, snoozed, and skipped reminders
 class HistoryScreen extends ConsumerStatefulWidget {
@@ -31,7 +29,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                 child: _buildHeader(),
               ),
             ),
-            
+
             // Tab bar
             SliverToBoxAdapter(
               child: Padding(
@@ -39,38 +37,40 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                 child: _buildTabBar(),
               ),
             ),
-            
+
             // Today section
             SliverToBoxAdapter(
               child: _buildDateSection('TODAY'),
             ),
-            
+
             // Example reminders (would come from provider)
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
                   child: _buildSampleCard(index),
                 ),
                 childCount: 2,
               ),
             ),
-            
+
             // Yesterday section
             SliverToBoxAdapter(
               child: _buildDateSection('YESTERDAY'),
             ),
-            
+
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
                   child: _buildSampleCard(index + 2),
                 ),
                 childCount: 2,
               ),
             ),
-            
+
             const SliverToBoxAdapter(child: SizedBox(height: 120)),
           ],
         ),
@@ -123,7 +123,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                 duration: 200.ms,
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  color: isSelected ? PingTheme.primaryMint : Colors.transparent,
+                  color:
+                      isSelected ? PingTheme.primaryMint : Colors.transparent,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
@@ -184,15 +185,17 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       {'title': 'Daily Workout', 'time': '6:00 PM', 'status': 'done'},
       {'title': 'Evening Meditation', 'time': '9:00 PM', 'status': 'skipped'},
     ];
-    
+
     if (index >= samples.length) return const SizedBox.shrink();
-    
+
     final sample = samples[index];
-    final statusColor = sample['status'] == 'done' 
-        ? PingTheme.statusDone 
-        : (sample['status'] == 'snoozed' ? PingTheme.statusSnoozed : PingTheme.statusSkipped);
+    final statusColor = sample['status'] == 'done'
+        ? PingTheme.statusDone
+        : (sample['status'] == 'snoozed'
+            ? PingTheme.statusSnoozed
+            : PingTheme.statusSkipped);
     final statusLabel = sample['status']!.toUpperCase();
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: PingTheme.neumorphicCard,

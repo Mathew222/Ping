@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:go_router/go_router.dart';
 import 'package:ping/app/theme/ping_theme.dart';
 import 'package:ping/features/reminders/presentation/providers/reminders_provider.dart';
 import 'package:ping/features/reminders/presentation/widgets/reminder_card.dart';
@@ -18,11 +17,11 @@ class RemindersScreen extends ConsumerStatefulWidget {
 
 class _RemindersScreenState extends ConsumerState<RemindersScreen> {
   DateTime _selectedDate = DateTime.now();
-  
+
   @override
   Widget build(BuildContext context) {
     final reminders = ref.watch(remindersProvider);
-    
+
     return Scaffold(
       backgroundColor: PingTheme.bgLight,
       body: SafeArea(
@@ -30,7 +29,8 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (err, stack) => Center(child: Text('Error: $err')),
           data: (reminderList) {
-            debugPrint('RemindersScreen: Displaying ${reminderList.length} reminders');
+            debugPrint(
+                'RemindersScreen: Displaying ${reminderList.length} reminders');
             if (reminderList.isEmpty) {
               return _buildEmptyState();
             }
@@ -43,15 +43,17 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
 
   Widget _buildContent(List reminderList) {
     // Group reminders by time of day
-    final now = DateTime.now();
     final morning = reminderList.where((r) => r.triggerAt.hour < 12).toList();
-    final afternoon = reminderList.where((r) => r.triggerAt.hour >= 12 && r.triggerAt.hour < 17).toList();
+    final afternoon = reminderList
+        .where((r) => r.triggerAt.hour >= 12 && r.triggerAt.hour < 17)
+        .toList();
     final evening = reminderList.where((r) => r.triggerAt.hour >= 17).toList();
-    
+
     final completedToday = reminderList.where((r) => r.isCompleted).length;
     final totalToday = reminderList.length;
-    final progressPercent = totalToday > 0 ? (completedToday / totalToday * 100).round() : 0;
-    
+    final progressPercent =
+        totalToday > 0 ? (completedToday / totalToday * 100).round() : 0;
+
     return CustomScrollView(
       slivers: [
         // Header
@@ -61,7 +63,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
             child: _buildHeader(),
           ),
         ),
-        
+
         // Date picker row
         SliverToBoxAdapter(
           child: Padding(
@@ -69,15 +71,16 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
             child: _buildDatePicker(),
           ),
         ),
-        
+
         // Progress card
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-            child: _buildProgressCard(progressPercent, totalToday - completedToday),
+            child: _buildProgressCard(
+                progressPercent, totalToday - completedToday),
           ),
         ),
-        
+
         // Morning section
         if (morning.isNotEmpty) ...[
           SliverToBoxAdapter(
@@ -86,14 +89,15 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
                 child: ReminderCard(reminder: morning[index]),
               ),
               childCount: morning.length,
             ),
           ),
         ],
-        
+
         // Afternoon section
         if (afternoon.isNotEmpty) ...[
           SliverToBoxAdapter(
@@ -102,14 +106,15 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
                 child: ReminderCard(reminder: afternoon[index]),
               ),
               childCount: afternoon.length,
             ),
           ),
         ],
-        
+
         // Evening section
         if (evening.isNotEmpty) ...[
           SliverToBoxAdapter(
@@ -118,24 +123,46 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
                 child: ReminderCard(reminder: evening[index]),
               ),
               childCount: evening.length,
             ),
           ),
         ],
-        
+
         const SliverToBoxAdapter(child: SizedBox(height: 100)),
       ],
     );
   }
 
   Widget _buildHeader() {
-    final weekday = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    final month = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    final weekday = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday'
+    ];
+    final month = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ];
     final now = DateTime.now();
-    
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -165,7 +192,10 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
-                  colors: [PingTheme.dustyRose.withAlpha(150), PingTheme.paleRose],
+                  colors: [
+                    PingTheme.dustyRose.withAlpha(150),
+                    PingTheme.paleRose
+                  ],
                 ),
               ),
               child: const Icon(Icons.person, color: Colors.white, size: 24),
@@ -180,7 +210,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
     final now = DateTime.now();
     final days = List.generate(7, (i) => now.add(Duration(days: i)));
     final dayNames = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
-    
+
     return SizedBox(
       height: 80,
       child: ListView.separated(
@@ -190,7 +220,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
         itemBuilder: (context, index) {
           final day = days[index];
           final isSelected = day.day == _selectedDate.day;
-          
+
           return GestureDetector(
             onTap: () {
               HapticFeedback.selectionClick();
@@ -202,13 +232,15 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
               decoration: BoxDecoration(
                 color: isSelected ? PingTheme.dustyRose : PingTheme.cardWhite,
                 borderRadius: BorderRadius.circular(20),
-                boxShadow: isSelected ? null : [
-                  BoxShadow(
-                    color: PingTheme.shadowDark.withAlpha(40),
-                    offset: const Offset(2, 2),
-                    blurRadius: 6,
-                  ),
-                ],
+                boxShadow: isSelected
+                    ? null
+                    : [
+                        BoxShadow(
+                          color: PingTheme.shadowDark.withAlpha(40),
+                          offset: const Offset(2, 2),
+                          blurRadius: 6,
+                        ),
+                      ],
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -218,7 +250,8 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
-                      color: isSelected ? Colors.white : PingTheme.textSecondary,
+                      color:
+                          isSelected ? Colors.white : PingTheme.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -260,7 +293,8 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                 ),
                 const SizedBox(height: 12),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: PingTheme.paleRose,
                     borderRadius: BorderRadius.circular(12),
@@ -303,8 +337,8 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
             child: Text(
               '$percent%',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
           ),
         ],
@@ -318,8 +352,8 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-          fontWeight: FontWeight.w600,
-        ),
+              fontWeight: FontWeight.w600,
+            ),
       ),
     );
   }
