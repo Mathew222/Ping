@@ -42,15 +42,25 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
   }
 
   Widget _buildContent(List reminderList) {
+    // Filter reminders by selected date
+    final filteredReminders = reminderList.where((r) {
+      final reminderDate = r.triggerAt;
+      return reminderDate.year == _selectedDate.year &&
+          reminderDate.month == _selectedDate.month &&
+          reminderDate.day == _selectedDate.day;
+    }).toList();
+
     // Group reminders by time of day
-    final morning = reminderList.where((r) => r.triggerAt.hour < 12).toList();
-    final afternoon = reminderList
+    final morning =
+        filteredReminders.where((r) => r.triggerAt.hour < 12).toList();
+    final afternoon = filteredReminders
         .where((r) => r.triggerAt.hour >= 12 && r.triggerAt.hour < 17)
         .toList();
-    final evening = reminderList.where((r) => r.triggerAt.hour >= 17).toList();
+    final evening =
+        filteredReminders.where((r) => r.triggerAt.hour >= 17).toList();
 
-    final completedToday = reminderList.where((r) => r.isCompleted).length;
-    final totalToday = reminderList.length;
+    final completedToday = filteredReminders.where((r) => r.isCompleted).length;
+    final totalToday = filteredReminders.length;
     final progressPercent =
         totalToday > 0 ? (completedToday / totalToday * 100).round() : 0;
 
@@ -128,6 +138,50 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                 child: ReminderCard(reminder: evening[index]),
               ),
               childCount: evening.length,
+            ),
+          ),
+        ],
+
+        // Empty state for selected date with no reminders
+        if (filteredReminders.isEmpty) ...[
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(48),
+              child: Column(
+                children: [
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: PingTheme.primaryMint.withAlpha(30),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.event_available,
+                      size: 40,
+                      color: PingTheme.primaryMint,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No reminders for this date',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: PingTheme.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Select another date or create a new reminder',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: PingTheme.textSecondary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             ),
           ),
         ],
