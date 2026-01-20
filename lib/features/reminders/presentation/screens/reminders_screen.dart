@@ -6,6 +6,9 @@ import 'package:ping/app/theme/ping_theme.dart';
 import 'package:ping/features/reminders/presentation/providers/reminders_provider.dart';
 import 'package:ping/features/reminders/presentation/widgets/reminder_card.dart';
 import 'package:ping/features/reminders/presentation/widgets/empty_state.dart';
+import 'package:ping/features/reminders/presentation/widgets/calendar_widget.dart';
+import 'package:ping/features/reminders/presentation/widgets/reminders_summary_card.dart';
+import 'package:ping/features/reminders/domain/reminder.dart';
 
 /// Main reminders screen - "Upcoming" view from design
 class RemindersScreen extends ConsumerStatefulWidget {
@@ -17,6 +20,7 @@ class RemindersScreen extends ConsumerStatefulWidget {
 
 class _RemindersScreenState extends ConsumerState<RemindersScreen> {
   DateTime _selectedDate = DateTime.now();
+  bool _isCalendarExpanded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -74,11 +78,31 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
           ),
         ),
 
-        // Date picker row
+        // Summary card
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-            child: _buildDatePicker(),
+            child: _buildSummaryCard(reminderList),
+          ),
+        ),
+
+        // Calendar widget
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+            child: Column(
+              children: [
+                CalendarWidget(
+                  selectedDate: _selectedDate,
+                  onDateSelected: (date) {
+                    setState(() => _selectedDate = date);
+                  },
+                  isExpanded: _isCalendarExpanded,
+                ),
+                const SizedBox(height: 12),
+                _buildCalendarToggle(),
+              ],
+            ),
           ),
         ),
 
@@ -260,70 +284,46 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
     );
   }
 
-  Widget _buildDatePicker() {
-    final now = DateTime.now();
-    final days = List.generate(7, (i) => now.add(Duration(days: i)));
-    final dayNames = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
-
-    return SizedBox(
-      height: 80,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: days.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
-        itemBuilder: (context, index) {
-          final day = days[index];
-          final isSelected = day.day == _selectedDate.day;
-
-          return GestureDetector(
-            onTap: () {
-              HapticFeedback.selectionClick();
-              setState(() => _selectedDate = day);
-            },
-            child: AnimatedContainer(
-              duration: 200.ms,
-              width: 56,
-              decoration: BoxDecoration(
-                color: isSelected ? PingTheme.dustyRose : PingTheme.cardWhite,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: isSelected
-                    ? null
-                    : [
-                        BoxShadow(
-                          color: PingTheme.shadowDark.withAlpha(40),
-                          offset: const Offset(2, 2),
-                          blurRadius: 6,
-                        ),
-                      ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    dayNames[day.weekday - 1],
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color:
-                          isSelected ? Colors.white : PingTheme.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${day.day}',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: isSelected ? Colors.white : PingTheme.textPrimary,
-                    ),
-                  ),
-                ],
+  Widget _buildCalendarToggle() {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        setState(() => _isCalendarExpanded = !_isCalendarExpanded);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: PingTheme.cardWhite,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: PingTheme.shadowDark.withAlpha(30),
+              offset: const Offset(2, 2),
+              blurRadius: 4,
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              _isCalendarExpanded ? Icons.expand_less : Icons.expand_more,
+              size: 20,
+              color: PingTheme.textSecondary,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              _isCalendarExpanded ? 'Show Week View' : 'Show Month View',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: PingTheme.textSecondary,
               ),
             ),
-          );
-        },
+          ],
+        ),
       ),
-    );
+    ).animate().fadeIn(duration: 200.ms);
   }
 
   Widget _buildProgressCard(int percent, int remaining) {
@@ -431,6 +431,35 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
         ),
         child: Icon(icon, color: PingTheme.textSecondary, size: 22),
       ),
+    );
+  }
+
+  Widget _buildSummaryCard(List reminderList) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final tomorrow = today.add(const Duration(days: 1));
+    final nextWeek = today.add(const Duration(days: 7));
+
+    final todayCount = reminderList.where((r) {
+      final date = r.triggerAt;
+      return date.year == today.year &&
+          date.month == today.month &&
+          date.day == today.day;
+    }).length;
+
+    final upcomingCount = reminderList.where((r) {
+      return r.triggerAt.isAfter(tomorrow) &&
+          r.triggerAt.isBefore(nextWeek) &&
+          r.status == ReminderStatus.active;
+    }).length;
+
+    final totalActive =
+        reminderList.where((r) => r.status == ReminderStatus.active).length;
+
+    return RemindersSummaryCard(
+      totalReminders: totalActive,
+      todayReminders: todayCount,
+      upcomingReminders: upcomingCount,
     );
   }
 

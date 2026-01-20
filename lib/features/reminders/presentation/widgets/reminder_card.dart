@@ -28,7 +28,7 @@ class ReminderCard extends ConsumerWidget {
             // Icon circle
             _buildIconCircle(),
             const SizedBox(width: 14),
-            
+
             // Content
             Expanded(
               child: Column(
@@ -40,8 +40,8 @@ class ReminderCard extends ConsumerWidget {
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: PingTheme.textPrimary,
-                      decoration: reminder.isCompleted 
-                          ? TextDecoration.lineThrough 
+                      decoration: reminder.isCompleted
+                          ? TextDecoration.lineThrough
                           : null,
                     ),
                   ),
@@ -56,7 +56,7 @@ class ReminderCard extends ConsumerWidget {
                 ],
               ),
             ),
-            
+
             // Status badge or checkbox
             _buildTrailing(context, ref),
           ],
@@ -67,23 +67,24 @@ class ReminderCard extends ConsumerWidget {
 
   void _showSnoozeSheet(BuildContext context, WidgetRef ref) async {
     HapticFeedback.mediumImpact();
-    
+
     final minutes = await CustomSnoozeSheet.show(
       context,
       reminderId: reminder.id,
       reminderTitle: reminder.title,
     );
-    
+
     if (minutes != null) {
       ref.read(reminderActionsProvider.notifier).snooze(
-        reminder.id,
-        Duration(minutes: minutes),
-      );
-      
+            reminder.id,
+            Duration(minutes: minutes),
+          );
+
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Snoozed for ${CustomSnoozePicker.formatDuration(minutes)}'),
+            content: Text(
+                'Snoozed for ${CustomSnoozePicker.formatDuration(minutes)}'),
             action: SnackBarAction(
               label: 'Undo',
               onPressed: () {
@@ -99,7 +100,7 @@ class ReminderCard extends ConsumerWidget {
   Widget _buildIconCircle() {
     final IconData icon;
     final Color color;
-    
+
     // Choose icon based on reminder category/priority
     switch (reminder.priority) {
       case ReminderPriority.high:
@@ -114,7 +115,7 @@ class ReminderCard extends ConsumerWidget {
         icon = Icons.notifications_none_rounded;
         color = PingTheme.primaryMint;
     }
-    
+
     return Container(
       width: 44,
       height: 44,
@@ -134,14 +135,14 @@ class ReminderCard extends ConsumerWidget {
         color: PingTheme.statusDone,
       );
     }
-    
+
     if (reminder.snoozedUntil != null) {
       return _StatusBadge(
         label: 'SNOOZED',
         color: PingTheme.statusSnoozed,
       );
     }
-    
+
     // Show checkbox for pending items
     return GestureDetector(
       onTap: () => _toggleComplete(ref),
@@ -164,9 +165,66 @@ class ReminderCard extends ConsumerWidget {
     return DateFormat('hh:mm a').format(dt);
   }
 
-  void _toggleComplete(WidgetRef ref) {
+  void _toggleComplete(WidgetRef ref) async {
     HapticFeedback.mediumImpact();
-    ref.read(reminderActionsProvider.notifier).complete(reminder.id);
+
+    // If recurring, show dialog with options
+    if (reminder.isRecurring) {
+      final result = await showDialog<String>(
+        context: ref.context,
+        builder: (context) => AlertDialog(
+          title: Text(
+            'Recurring Reminder',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: PingTheme.textPrimary,
+            ),
+          ),
+          content: Text(
+            'This is a recurring reminder. What would you like to do?',
+            style: TextStyle(color: PingTheme.textSecondary),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'cancel'),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: PingTheme.textSecondary),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'complete'),
+              child: Text(
+                'Complete This Occurrence',
+                style: TextStyle(color: PingTheme.primaryMint),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'stop'),
+              child: Text(
+                'Stop Recurring',
+                style: TextStyle(
+                  color: PingTheme.primaryOrange,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+
+      if (result == 'complete') {
+        ref.read(reminderActionsProvider.notifier).complete(reminder.id);
+      } else if (result == 'stop') {
+        ref.read(reminderActionsProvider.notifier).stopRecurring(reminder.id);
+      }
+    } else {
+      // Non-recurring, just complete it
+      ref.read(reminderActionsProvider.notifier).complete(reminder.id);
+    }
   }
 
   void _showDetails(BuildContext context) {
@@ -218,13 +276,15 @@ class ExpandedReminderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = reminder.isCompleted 
-        ? PingTheme.statusDone 
-        : (reminder.snoozedUntil != null ? PingTheme.statusSnoozed : PingTheme.statusSkipped);
-    final statusLabel = reminder.isCompleted 
-        ? 'DONE' 
+    final statusColor = reminder.isCompleted
+        ? PingTheme.statusDone
+        : (reminder.snoozedUntil != null
+            ? PingTheme.statusSnoozed
+            : PingTheme.statusSkipped);
+    final statusLabel = reminder.isCompleted
+        ? 'DONE'
         : (reminder.snoozedUntil != null ? 'SNOOZED' : 'SKIPPED');
-    
+
     return Container(
       decoration: PingTheme.neumorphicCard,
       child: Column(
@@ -275,7 +335,7 @@ class ExpandedReminderCard extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Description
           if (reminder.body != null)
             Padding(
@@ -289,7 +349,7 @@ class ExpandedReminderCard extends StatelessWidget {
                 ),
               ),
             ),
-          
+
           // Image
           if (imageUrl != null)
             Padding(
@@ -304,7 +364,7 @@ class ExpandedReminderCard extends StatelessWidget {
                 ),
               ),
             ),
-          
+
           // View Details button
           Padding(
             padding: const EdgeInsets.all(16),
@@ -312,7 +372,8 @@ class ExpandedReminderCard extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.visibility_outlined, size: 16, color: PingTheme.textSecondary),
+                  Icon(Icons.visibility_outlined,
+                      size: 16, color: PingTheme.textSecondary),
                   const SizedBox(width: 6),
                   Text(
                     'View Details',

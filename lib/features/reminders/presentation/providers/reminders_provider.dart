@@ -21,10 +21,9 @@ final upcomingRemindersProvider = Provider<AsyncValue<List<Reminder>>>((ref) {
     final now = DateTime.now();
     final tomorrow = now.add(const Duration(days: 1));
     return reminders
-      .where((r) => 
-        r.status == ReminderStatus.active &&
-        r.triggerAt.isBefore(tomorrow))
-      .toList()
+        .where((r) =>
+            r.status == ReminderStatus.active && r.triggerAt.isBefore(tomorrow))
+        .toList()
       ..sort((a, b) => a.triggerAt.compareTo(b.triggerAt));
   });
 });
@@ -35,10 +34,9 @@ final overdueRemindersProvider = Provider<AsyncValue<List<Reminder>>>((ref) {
   return remindersAsync.whenData((reminders) {
     final now = DateTime.now();
     return reminders
-      .where((r) => 
-        r.status == ReminderStatus.active &&
-        r.triggerAt.isBefore(now))
-      .toList()
+        .where((r) =>
+            r.status == ReminderStatus.active && r.triggerAt.isBefore(now))
+        .toList()
       ..sort((a, b) => a.triggerAt.compareTo(b.triggerAt));
   });
 });
@@ -47,16 +45,15 @@ final overdueRemindersProvider = Provider<AsyncValue<List<Reminder>>>((ref) {
 final snoozedRemindersProvider = Provider<AsyncValue<List<Reminder>>>((ref) {
   final remindersAsync = ref.watch(remindersProvider);
   return remindersAsync.whenData((reminders) {
-    return reminders
-      .where((r) => r.status == ReminderStatus.snoozed)
-      .toList()
+    return reminders.where((r) => r.status == ReminderStatus.snoozed).toList()
       ..sort((a, b) => (a.snoozedUntil ?? a.triggerAt)
-        .compareTo(b.snoozedUntil ?? b.triggerAt));
+          .compareTo(b.snoozedUntil ?? b.triggerAt));
   });
 });
 
 /// Provider for a single reminder by ID
-final reminderByIdProvider = Provider.family<AsyncValue<Reminder?>, String>((ref, id) {
+final reminderByIdProvider =
+    Provider.family<AsyncValue<Reminder?>, String>((ref, id) {
   final remindersAsync = ref.watch(remindersProvider);
   return remindersAsync.whenData((reminders) {
     try {
@@ -67,13 +64,51 @@ final reminderByIdProvider = Provider.family<AsyncValue<Reminder?>, String>((ref
   });
 });
 
+/// Provider for reminders on a specific date
+final remindersByDateProvider =
+    Provider.family<AsyncValue<List<Reminder>>, DateTime>((ref, date) {
+  final remindersAsync = ref.watch(remindersProvider);
+  return remindersAsync.whenData((reminders) {
+    return reminders.where((r) {
+      final reminderDate = r.triggerAt;
+      return reminderDate.year == date.year &&
+          reminderDate.month == date.month &&
+          reminderDate.day == date.day;
+    }).toList()
+      ..sort((a, b) => a.triggerAt.compareTo(b.triggerAt));
+  });
+});
+
+/// Provider for reminder count on a specific date
+final reminderCountByDateProvider =
+    Provider.family<AsyncValue<int>, DateTime>((ref, date) {
+  final remindersAsync = ref.watch(remindersByDateProvider(date));
+  return remindersAsync.whenData((reminders) => reminders.length);
+});
+
+/// Provider for dates with reminders in a given month
+final datesWithRemindersProvider =
+    Provider.family<AsyncValue<Set<DateTime>>, DateTime>((ref, month) {
+  final remindersAsync = ref.watch(remindersProvider);
+  return remindersAsync.whenData((reminders) {
+    final dates = <DateTime>{};
+    for (final reminder in reminders) {
+      final date = reminder.triggerAt;
+      if (date.year == month.year && date.month == month.month) {
+        dates.add(DateTime(date.year, date.month, date.day));
+      }
+    }
+    return dates;
+  });
+});
+
 /// Notifier for reminder actions
 class ReminderActionsNotifier extends StateNotifier<AsyncValue<void>> {
   final RemindersRepository _repository;
   final NotificationService _notifications;
 
-  ReminderActionsNotifier(this._repository, this._notifications) 
-    : super(const AsyncValue.data(null)) {
+  ReminderActionsNotifier(this._repository, this._notifications)
+      : super(const AsyncValue.data(null)) {
     // Listen to notification actions
     _notifications.onActionReceived = _handleNotificationAction;
   }
@@ -97,12 +132,15 @@ class ReminderActionsNotifier extends StateNotifier<AsyncValue<void>> {
   Future<void> complete(String id) => completeReminder(id);
 
   /// Convenience shorthand for snoozeReminder
-  Future<void> snooze(String id, Duration duration) => snoozeReminder(id, duration);
+  Future<void> snooze(String id, Duration duration) =>
+      snoozeReminder(id, duration);
 
   /// Update an existing reminder
   Future<void> updateReminder(Reminder reminder) async {
     state = const AsyncValue.loading();
     try {
+      // Cancel old notification FIRST to prevent duplicates
+      await _notifications.cancelReminder(reminder.id);
       await _repository.updateReminder(reminder);
       await _notifications.scheduleReminder(reminder);
       state = const AsyncValue.data(null);
@@ -136,9 +174,10 @@ class ReminderActionsNotifier extends StateNotifier<AsyncValue<void>> {
         final completed = reminder.complete();
         await _repository.updateReminder(completed);
         await _notifications.cancelReminder(id);
-        
+
         // If recurring, schedule next occurrence
-        if (completed.isRecurring && completed.status == ReminderStatus.active) {
+        if (completed.isRecurring &&
+            completed.status == ReminderStatus.active) {
           await _notifications.scheduleReminder(completed);
         }
       }
@@ -157,7 +196,7 @@ class ReminderActionsNotifier extends StateNotifier<AsyncValue<void>> {
         final skipped = reminder.skip();
         await _repository.updateReminder(skipped);
         await _notifications.cancelReminder(id);
-        
+
         // If recurring, schedule next occurrence
         if (skipped.isRecurring && skipped.status == ReminderStatus.active) {
           await _notifications.scheduleReminder(skipped);
@@ -169,12 +208,29 @@ class ReminderActionsNotifier extends StateNotifier<AsyncValue<void>> {
     }
   }
 
+  /// Stop a recurring reminder permanently
+  Future<void> stopRecurring(String id) async {
+    state = const AsyncValue.loading();
+    try {
+      final reminder = await _repository.getReminder(id);
+      if (reminder != null && reminder.isRecurring) {
+        final stopped = reminder.stopRecurring();
+        await _notifications.cancelReminder(id);
+        await _repository.updateReminder(stopped);
+      }
+      state = const AsyncValue.data(null);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
   /// Delete a reminder
   Future<void> deleteReminder(String id) async {
     state = const AsyncValue.loading();
     try {
-      await _repository.deleteReminder(id);
+      // Cancel notification FIRST to prevent rescheduling
       await _notifications.cancelReminder(id);
+      await _repository.deleteReminder(id);
       state = const AsyncValue.data(null);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
@@ -182,7 +238,8 @@ class ReminderActionsNotifier extends StateNotifier<AsyncValue<void>> {
   }
 
   /// Handle notification action callback
-  void _handleNotificationAction(String reminderId, String action, int? snoozeDuration) {
+  void _handleNotificationAction(
+      String reminderId, String action, int? snoozeDuration) {
     switch (action) {
       case 'COMPLETE':
         completeReminder(reminderId);
@@ -200,7 +257,8 @@ class ReminderActionsNotifier extends StateNotifier<AsyncValue<void>> {
 }
 
 /// Provider for reminder actions
-final reminderActionsProvider = StateNotifierProvider<ReminderActionsNotifier, AsyncValue<void>>((ref) {
+final reminderActionsProvider =
+    StateNotifierProvider<ReminderActionsNotifier, AsyncValue<void>>((ref) {
   final repository = ref.watch(remindersRepositoryProvider);
   return ReminderActionsNotifier(repository, NotificationService.instance);
 });

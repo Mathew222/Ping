@@ -24,7 +24,7 @@ enum SyncStatus {
 }
 
 /// Core Reminder entity
-/// 
+///
 /// This is the central data model for the entire app.
 /// Reminders are server-authoritative with optimistic local updates.
 class Reminder {
@@ -32,26 +32,26 @@ class Reminder {
   final String userId;
   final String title;
   final String? body;
-  
+
   // Timing
   final DateTime createdAt;
   final DateTime triggerAt;
   final DateTime originalTriggerAt;
-  
+
   // Recurrence
   final RecurrenceRule? recurrenceRule;
   final bool isRecurring;
-  
+
   // State
   final ReminderStatus status;
   final DateTime? snoozedUntil;
   final int? lastSnoozeDuration; // Minutes - remembered for quick snooze
-  
+
   // Sync
   final int version;
   final DateTime updatedAt;
   final SyncStatus syncStatus;
-  
+
   // Metadata
   final String? profileId;
   final List<String> tags;
@@ -77,12 +77,12 @@ class Reminder {
     this.profileId,
     this.tags = const [],
     this.priority = ReminderPriority.normal,
-  }) : id = id ?? const Uuid().v4(),
-       userId = userId ?? 'local_user',
-       createdAt = createdAt ?? DateTime.now(),
-       originalTriggerAt = originalTriggerAt ?? triggerAt,
-       isRecurring = isRecurring ?? (recurrenceRule != null),
-       updatedAt = updatedAt ?? DateTime.now();
+  })  : id = id ?? const Uuid().v4(),
+        userId = userId ?? 'local_user',
+        createdAt = createdAt ?? DateTime.now(),
+        originalTriggerAt = originalTriggerAt ?? triggerAt,
+        isRecurring = isRecurring ?? (recurrenceRule != null),
+        updatedAt = updatedAt ?? DateTime.now();
 
   /// Create a new reminder with generated ID (factory kept for compatibility)
   factory Reminder.create({
@@ -173,10 +173,11 @@ class Reminder {
   /// Complete the reminder (dismiss if non-recurring, advance if recurring)
   Reminder complete() {
     final now = DateTime.now();
-    
+
     if (isRecurring && recurrenceRule != null) {
       // Calculate next occurrence
-      final nextTrigger = recurrenceRule!.calculateNextTrigger(originalTriggerAt);
+      final nextTrigger =
+          recurrenceRule!.calculateNextTrigger(originalTriggerAt);
       return copyWith(
         status: ReminderStatus.active,
         triggerAt: nextTrigger,
@@ -187,7 +188,7 @@ class Reminder {
         syncStatus: SyncStatus.pending,
       );
     }
-    
+
     return copyWith(
       status: ReminderStatus.completed,
       updatedAt: now,
@@ -199,9 +200,10 @@ class Reminder {
   /// Skip this occurrence (only for recurring reminders)
   Reminder skip() {
     final now = DateTime.now();
-    
+
     if (isRecurring && recurrenceRule != null) {
-      final nextTrigger = recurrenceRule!.calculateNextTrigger(originalTriggerAt);
+      final nextTrigger =
+          recurrenceRule!.calculateNextTrigger(originalTriggerAt);
       return copyWith(
         status: ReminderStatus.active,
         triggerAt: nextTrigger,
@@ -212,7 +214,7 @@ class Reminder {
         syncStatus: SyncStatus.pending,
       );
     }
-    
+
     return copyWith(
       status: ReminderStatus.skipped,
       updatedAt: now,
@@ -221,8 +223,22 @@ class Reminder {
     );
   }
 
+  /// Stop this recurring reminder permanently (no more occurrences)
+  Reminder stopRecurring() {
+    final now = DateTime.now();
+    return copyWith(
+      status: ReminderStatus.completed,
+      isRecurring: false,
+      recurrenceRule: null,
+      updatedAt: now,
+      version: version + 1,
+      syncStatus: SyncStatus.pending,
+    );
+  }
+
   /// Check if reminder is due
-  bool get isDue => triggerAt.isBefore(DateTime.now()) && status == ReminderStatus.active;
+  bool get isDue =>
+      triggerAt.isBefore(DateTime.now()) && status == ReminderStatus.active;
 
   /// Check if reminder is completed
   bool get isCompleted => status == ReminderStatus.completed;
@@ -272,31 +288,34 @@ class Reminder {
       createdAt: DateTime.parse(json['createdAt'] as String),
       triggerAt: DateTime.parse(json['triggerAt'] as String),
       originalTriggerAt: DateTime.parse(json['originalTriggerAt'] as String),
-      recurrenceRule: json['recurrenceRule'] != null 
-        ? RecurrenceRule.fromJson(json['recurrenceRule'] as Map<String, dynamic>)
-        : null,
+      recurrenceRule: json['recurrenceRule'] != null
+          ? RecurrenceRule.fromJson(
+              json['recurrenceRule'] as Map<String, dynamic>)
+          : null,
       isRecurring: json['isRecurring'] as bool? ?? false,
       status: ReminderStatus.values.byName(json['status'] as String),
-      snoozedUntil: json['snoozedUntil'] != null 
-        ? DateTime.parse(json['snoozedUntil'] as String) 
-        : null,
+      snoozedUntil: json['snoozedUntil'] != null
+          ? DateTime.parse(json['snoozedUntil'] as String)
+          : null,
       lastSnoozeDuration: json['lastSnoozeDuration'] as int?,
       version: json['version'] as int? ?? 1,
       updatedAt: DateTime.parse(json['updatedAt'] as String),
-      syncStatus: SyncStatus.values.byName(json['syncStatus'] as String? ?? 'pending'),
+      syncStatus:
+          SyncStatus.values.byName(json['syncStatus'] as String? ?? 'pending'),
       profileId: json['profileId'] as String?,
       tags: (json['tags'] as List<dynamic>?)?.cast<String>() ?? [],
-      priority: ReminderPriority.values.byName(json['priority'] as String? ?? 'normal'),
+      priority: ReminderPriority.values
+          .byName(json['priority'] as String? ?? 'normal'),
     );
   }
 
   @override
   bool operator ==(Object other) =>
-    identical(this, other) ||
-    other is Reminder && 
-      runtimeType == other.runtimeType && 
-      id == other.id &&
-      version == other.version;
+      identical(this, other) ||
+      other is Reminder &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          version == other.version;
 
   @override
   int get hashCode => id.hashCode ^ version.hashCode;
