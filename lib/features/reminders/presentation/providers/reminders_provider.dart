@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ping/features/reminders/domain/reminder.dart';
 import 'package:ping/features/reminders/data/reminders_repository.dart';
@@ -238,20 +239,36 @@ class ReminderActionsNotifier extends StateNotifier<AsyncValue<void>> {
   }
 
   /// Handle notification action callback
-  void _handleNotificationAction(
-      String reminderId, String action, int? snoozeDuration) {
-    switch (action) {
-      case 'COMPLETE':
-        completeReminder(reminderId);
-        break;
-      case 'SNOOZE_QUICK':
-      case 'SNOOZE_CUSTOM':
-        final duration = Duration(minutes: snoozeDuration ?? 10);
-        snoozeReminder(reminderId, duration);
-        break;
-      case 'SKIP':
-        skipReminder(reminderId);
-        break;
+  Future<void> _handleNotificationAction(
+      String reminderId, String action, int? snoozeDuration) async {
+    debugPrint(
+        'ReminderActionsNotifier: Handling notification action: $action for reminder $reminderId');
+
+    try {
+      switch (action) {
+        case 'COMPLETE':
+          debugPrint(
+              'ReminderActionsNotifier: Completing reminder $reminderId');
+          await completeReminder(reminderId);
+          break;
+        case 'SNOOZE_QUICK':
+        case 'SNOOZE_CUSTOM':
+          final duration = Duration(minutes: snoozeDuration ?? 10);
+          debugPrint(
+              'ReminderActionsNotifier: Snoozing reminder $reminderId for ${duration.inMinutes} minutes');
+          await snoozeReminder(reminderId, duration);
+          break;
+        case 'SKIP':
+          debugPrint('ReminderActionsNotifier: Skipping reminder $reminderId');
+          await skipReminder(reminderId);
+          break;
+        default:
+          debugPrint('ReminderActionsNotifier: Unknown action: $action');
+      }
+    } catch (e, st) {
+      debugPrint(
+          'ReminderActionsNotifier: Error handling notification action: $e');
+      debugPrint('Stack trace: $st');
     }
   }
 }

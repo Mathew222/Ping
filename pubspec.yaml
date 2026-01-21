@@ -29,6 +29,11 @@ dependencies:
   # Notifications
   flutter_local_notifications: ^19.5.0
   
+  # Supabase & Auth
+  supabase_flutter: ^2.0.0
+  google_sign_in: ^6.1.5
+  flutter_secure_storage: ^9.0.0
+  
   # UI/UX
   google_fonts: ^6.1.0
   flutter_animate: ^4.3.0

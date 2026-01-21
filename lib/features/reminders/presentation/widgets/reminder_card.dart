@@ -10,23 +10,44 @@ import 'package:ping/core/notifications/notification_service.dart';
 import 'package:intl/intl.dart';
 
 /// Neumorphic reminder card with status badge and checkbox
-class ReminderCard extends ConsumerWidget {
+class ReminderCard extends ConsumerStatefulWidget {
   final Reminder reminder;
+  final int index;
 
-  const ReminderCard({super.key, required this.reminder});
+  const ReminderCard({
+    super.key,
+    required this.reminder,
+    this.index = 0,
+  });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ReminderCard> createState() => _ReminderCardState();
+}
+
+class _ReminderCardState extends ConsumerState<ReminderCard> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final isPriority = widget.reminder.priority == ReminderPriority.high;
+
     return GestureDetector(
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) => setState(() => _isPressed = false),
+      onTapCancel: () => setState(() => _isPressed = false),
       onTap: () => _showDetails(context),
       onLongPress: () => _showSnoozeSheet(context, ref),
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        transform: Matrix4.identity()..scale(_isPressed ? 0.98 : 1.0),
         padding: const EdgeInsets.all(16),
-        decoration: PingTheme.neumorphicCard,
+        decoration: _isPressed
+            ? PingTheme.neumorphicCardPressed
+            : PingTheme.neumorphicCard,
         child: Row(
           children: [
-            // Icon circle
-            _buildIconCircle(),
+            // Icon circle with priority pulse
+            _buildIconCircle(isPriority),
             const SizedBox(width: 14),
 
             // Content
@@ -35,19 +56,19 @@ class ReminderCard extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    reminder.title,
+                    widget.reminder.title,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: PingTheme.textPrimary,
-                      decoration: reminder.isCompleted
+                      decoration: widget.reminder.isCompleted
                           ? TextDecoration.lineThrough
                           : null,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    _formatTime(reminder.triggerAt),
+                    _formatTime(widget.reminder.triggerAt),
                     style: TextStyle(
                       fontSize: 13,
                       color: PingTheme.textSecondary,
@@ -62,7 +83,19 @@ class ReminderCard extends ConsumerWidget {
           ],
         ),
       ),
-    ).animate().fadeIn(duration: 200.ms).slideX(begin: 0.05, end: 0);
+    )
+        .animate()
+        .fadeIn(
+          duration: 300.ms,
+          delay: (widget.index * 50).ms,
+        )
+        .slideX(
+          begin: 0.1,
+          end: 0,
+          duration: 400.ms,
+          delay: (widget.index * 50).ms,
+          curve: Curves.easeOutCubic,
+        );
   }
 
   void _showSnoozeSheet(BuildContext context, WidgetRef ref) async {
@@ -70,13 +103,13 @@ class ReminderCard extends ConsumerWidget {
 
     final minutes = await CustomSnoozeSheet.show(
       context,
-      reminderId: reminder.id,
-      reminderTitle: reminder.title,
+      reminderId: widget.reminder.id,
+      reminderTitle: widget.reminder.title,
     );
 
     if (minutes != null) {
       ref.read(reminderActionsProvider.notifier).snooze(
-            reminder.id,
+            widget.reminder.id,
             Duration(minutes: minutes),
           );
 
@@ -97,12 +130,12 @@ class ReminderCard extends ConsumerWidget {
     }
   }
 
-  Widget _buildIconCircle() {
+  Widget _buildIconCircle(bool isPriority) {
     final IconData icon;
     final Color color;
 
     // Choose icon based on reminder category/priority
-    switch (reminder.priority) {
+    switch (widget.reminder.priority) {
       case ReminderPriority.high:
         icon = Icons.priority_high_rounded;
         color = PingTheme.primaryOrange;
@@ -116,7 +149,7 @@ class ReminderCard extends ConsumerWidget {
         color = PingTheme.primaryMint;
     }
 
-    return Container(
+    final iconWidget = Container(
       width: 44,
       height: 44,
       decoration: BoxDecoration(
@@ -125,18 +158,31 @@ class ReminderCard extends ConsumerWidget {
       ),
       child: Icon(icon, color: color, size: 22),
     );
+
+    // Add pulse animation for high priority
+    if (isPriority) {
+      return iconWidget
+          .animate(onPlay: (controller) => controller.repeat(reverse: true))
+          .scale(
+            begin: const Offset(1, 1),
+            end: const Offset(1.1, 1.1),
+            duration: 1000.ms,
+          );
+    }
+
+    return iconWidget;
   }
 
   Widget _buildTrailing(BuildContext context, WidgetRef ref) {
     // Show status badge for completed/snoozed/skipped
-    if (reminder.isCompleted) {
+    if (widget.reminder.isCompleted) {
       return _StatusBadge(
         label: 'DONE',
         color: PingTheme.statusDone,
       );
     }
 
-    if (reminder.snoozedUntil != null) {
+    if (widget.reminder.snoozedUntil != null) {
       return _StatusBadge(
         label: 'SNOOZED',
         color: PingTheme.statusSnoozed,
@@ -169,7 +215,7 @@ class ReminderCard extends ConsumerWidget {
     HapticFeedback.mediumImpact();
 
     // If recurring, show dialog with options
-    if (reminder.isRecurring) {
+    if (widget.reminder.isRecurring) {
       final result = await showDialog<String>(
         context: ref.context,
         builder: (context) => AlertDialog(
@@ -217,13 +263,15 @@ class ReminderCard extends ConsumerWidget {
       );
 
       if (result == 'complete') {
-        ref.read(reminderActionsProvider.notifier).complete(reminder.id);
+        ref.read(reminderActionsProvider.notifier).complete(widget.reminder.id);
       } else if (result == 'stop') {
-        ref.read(reminderActionsProvider.notifier).stopRecurring(reminder.id);
+        ref
+            .read(reminderActionsProvider.notifier)
+            .stopRecurring(widget.reminder.id);
       }
     } else {
       // Non-recurring, just complete it
-      ref.read(reminderActionsProvider.notifier).complete(reminder.id);
+      ref.read(reminderActionsProvider.notifier).complete(widget.reminder.id);
     }
   }
 

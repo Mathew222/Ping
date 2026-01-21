@@ -125,7 +125,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
               (context, index) => Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
-                child: ReminderCard(reminder: morning[index]),
+                child: ReminderCard(reminder: morning[index], index: index),
               ),
               childCount: morning.length,
             ),
@@ -142,7 +142,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
               (context, index) => Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
-                child: ReminderCard(reminder: afternoon[index]),
+                child: ReminderCard(reminder: afternoon[index], index: index),
               ),
               childCount: afternoon.length,
             ),
@@ -159,7 +159,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
               (context, index) => Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
-                child: ReminderCard(reminder: evening[index]),
+                child: ReminderCard(reminder: evening[index], index: index),
               ),
               childCount: evening.length,
             ),
@@ -216,67 +216,87 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
   }
 
   Widget _buildHeader() {
-    final weekday = [
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
-      'Sunday'
-    ];
-    final month = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
-    ];
     final now = DateTime.now();
+    final hour = now.hour;
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    // Time-based greeting
+    String greeting;
+    if (hour < 12) {
+      greeting = 'Good Morning';
+    } else if (hour < 17) {
+      greeting = 'Good Afternoon';
+    } else {
+      greeting = 'Good Evening';
+    }
+
+    return Column(
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Upcoming',
-              style: Theme.of(context).textTheme.headlineLarge,
-            ),
-            Text(
-              '${weekday[now.weekday - 1]}, ${month[now.month - 1]} ${now.day}',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ],
-        ),
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildNeumorphicButton(
-              Icons.search,
-              onTap: () {},
-            ),
-            const SizedBox(width: 12),
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [
-                    PingTheme.dustyRose.withAlpha(150),
-                    PingTheme.paleRose
-                  ],
-                ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    greeting,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: PingTheme.textSecondary,
+                    ),
+                  )
+                      .animate()
+                      .fadeIn(duration: 400.ms)
+                      .slideX(begin: -0.1, end: 0, duration: 400.ms),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Upcoming',
+                    style: Theme.of(context).textTheme.headlineLarge,
+                  ).animate().fadeIn(delay: 100.ms, duration: 400.ms).slideX(
+                      begin: -0.1, end: 0, delay: 100.ms, duration: 400.ms),
+                ],
               ),
-              child: const Icon(Icons.person, color: Colors.white, size: 24),
+            ),
+            Row(
+              children: [
+                _buildNeumorphicButton(
+                  Icons.search,
+                  onTap: () {},
+                ),
+                const SizedBox(width: 12),
+                // Animated profile avatar
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        PingTheme.primaryMint,
+                        PingTheme.dustyRose,
+                      ],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: PingTheme.primaryMint.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child:
+                      const Icon(Icons.person, color: Colors.white, size: 24),
+                )
+                    .animate(
+                        onPlay: (controller) =>
+                            controller.repeat(reverse: true))
+                    .shimmer(
+                        duration: 3000.ms,
+                        color: Colors.white.withOpacity(0.3)),
+              ],
             ),
           ],
         ),
