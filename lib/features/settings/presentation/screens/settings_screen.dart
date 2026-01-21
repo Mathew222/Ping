@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ping/app/theme/ping_theme.dart';
+import 'package:ping/features/auth/presentation/providers/auth_provider.dart';
 
 /// Settings screen with neumorphic design
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -20,6 +22,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(currentUserProvider);
+
     return Scaffold(
       backgroundColor: PingTheme.bgLight,
       body: SafeArea(
@@ -39,10 +43,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 'Account',
                 [
                   _buildSettingsTile(
-                    icon: Icons.person_outline,
-                    title: 'Sign In',
-                    subtitle: 'Sync reminders across devices',
-                    onTap: () => _showSignInDialog(),
+                    icon: user != null ? Icons.person : Icons.person_outline,
+                    title: user != null ? 'Profile' : 'Sign In',
+                    subtitle: user != null
+                        ? user.email
+                        : 'Sync reminders across devices',
+                    onTap: () => user != null
+                        ? context.push('/profile')
+                        : context.push('/login'),
                   ),
                 ],
               ),
@@ -206,10 +214,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: onTap != null ? () {
-          HapticFeedback.selectionClick();
-          onTap();
-        } : null,
+        onTap: onTap != null
+            ? () {
+                HapticFeedback.selectionClick();
+                onTap();
+              }
+            : null,
         borderRadius: BorderRadius.circular(20),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -249,7 +259,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
               ),
               if (onTap != null)
-                Icon(Icons.chevron_right, color: PingTheme.textSecondary, size: 20),
+                Icon(Icons.chevron_right,
+                    color: PingTheme.textSecondary, size: 20),
             ],
           ),
         ),
@@ -305,7 +316,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Sign In'),
-        content: const Text('Sign in with your account to sync reminders across all your devices.'),
+        content: const Text(
+            'Sign in with your account to sync reminders across all your devices.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -346,15 +358,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ),
             ...durations.map((d) => ListTile(
-              title: Text('$d minutes'),
-              trailing: _defaultSnooze == d
-                  ? Icon(Icons.check, color: PingTheme.primaryMint)
-                  : null,
-              onTap: () {
-                setState(() => _defaultSnooze = d);
-                Navigator.pop(context);
-              },
-            )),
+                  title: Text('$d minutes'),
+                  trailing: _defaultSnooze == d
+                      ? Icon(Icons.check, color: PingTheme.primaryMint)
+                      : null,
+                  onTap: () {
+                    setState(() => _defaultSnooze = d);
+                    Navigator.pop(context);
+                  },
+                )),
             const SizedBox(height: 16),
           ],
         ),
@@ -382,18 +394,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ),
             ...themes.map((t) => ListTile(
-              leading: Icon(
-                t == 'Dark' ? Icons.dark_mode : (t == 'Light' ? Icons.light_mode : Icons.brightness_auto),
-              ),
-              title: Text(t),
-              trailing: _theme == t
-                  ? Icon(Icons.check, color: PingTheme.primaryMint)
-                  : null,
-              onTap: () {
-                setState(() => _theme = t);
-                Navigator.pop(context);
-              },
-            )),
+                  leading: Icon(
+                    t == 'Dark'
+                        ? Icons.dark_mode
+                        : (t == 'Light'
+                            ? Icons.light_mode
+                            : Icons.brightness_auto),
+                  ),
+                  title: Text(t),
+                  trailing: _theme == t
+                      ? Icon(Icons.check, color: PingTheme.primaryMint)
+                      : null,
+                  onTap: () {
+                    setState(() => _theme = t);
+                    Navigator.pop(context);
+                  },
+                )),
             const SizedBox(height: 16),
           ],
         ),
@@ -418,7 +434,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Clear All Data?'),
-        content: const Text('This will permanently delete all your reminders. This action cannot be undone.'),
+        content: const Text(
+            'This will permanently delete all your reminders. This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

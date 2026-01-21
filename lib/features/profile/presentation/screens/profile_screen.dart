@@ -67,16 +67,6 @@ class ProfileScreen extends ConsumerWidget {
                 textAlign: TextAlign.center,
               ).animate().fadeIn(delay: 200.ms, duration: 400.ms),
 
-              const SizedBox(height: 8),
-
-              Text(
-                'Account created: ${_formatDate(user?.createdAt)}',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: PingTheme.textSecondary,
-                    ),
-                textAlign: TextAlign.center,
-              ).animate().fadeIn(delay: 300.ms, duration: 400.ms),
-
               const SizedBox(height: 40),
 
               // Account info card
