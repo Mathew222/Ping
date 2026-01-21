@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ping/features/reminders/domain/reminder.dart';
+import 'package:ping/features/reminders/data/i_reminders_repository.dart';
 import 'package:ping/features/reminders/data/reminders_repository.dart';
 import 'package:ping/features/reminders/data/supabase_reminders_repository.dart';
 import 'package:ping/features/auth/presentation/providers/auth_provider.dart';
@@ -8,7 +9,7 @@ import 'package:ping/core/notifications/notification_service.dart';
 
 /// Provider for the reminders repository
 /// Uses Supabase when authenticated, falls back to local storage
-final remindersRepositoryProvider = Provider<dynamic>((ref) {
+final remindersRepositoryProvider = Provider<IRemindersRepository>((ref) {
   final isAuthenticated = ref.watch(isAuthenticatedProvider);
 
   if (isAuthenticated) {
@@ -116,7 +117,7 @@ final datesWithRemindersProvider =
 
 /// Notifier for reminder actions
 class ReminderActionsNotifier extends StateNotifier<AsyncValue<void>> {
-  final RemindersRepository _repository;
+  final IRemindersRepository _repository;
   final NotificationService _notifications;
 
   ReminderActionsNotifier(this._repository, this._notifications)

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ping/features/reminders/domain/reminder.dart';
@@ -7,30 +8,33 @@ import 'package:ping/features/reminders/data/i_reminders_repository.dart';
 /// Repository for syncing reminders with Supabase
 class SupabaseRemindersRepository implements IRemindersRepository {
   final SupabaseClient _supabase = Supabase.instance.client;
+  final _controller = StreamController<List<Reminder>>.broadcast();
 
   /// Get current user ID
   String? get _currentUserId => _supabase.auth.currentUser?.id;
 
   /// Watch all reminders for current user (real-time)
   Stream<List<Reminder>> watchReminders() {
-    if (_currentUserId == null) {
-      return Stream.value([]);
-    }
+    debugPrint(
+        'SupabaseRemindersRepository: Setting up stream for user $_currentUserId');
 
-    return _supabase
-        .from('reminders')
-        .stream(primaryKey: ['id'])
-        .eq('user_id', _currentUserId!)
-        .order('trigger_at')
-        .map((data) {
-          debugPrint(
-              'SupabaseRemindersRepository: Received ${data.length} reminders from stream');
-          // Filter out soft-deleted reminders
-          return data
-              .where((json) => json['deleted_at'] == null)
-              .map((json) => _fromSupabase(json))
-              .toList();
-        });
+    // Emit initial data
+    _refreshReminders();
+
+    return _controller.stream;
+  }
+
+  /// Refresh reminders and emit to stream
+  Future<void> _refreshReminders() async {
+    try {
+      final reminders = await getReminders();
+      debugPrint(
+          'SupabaseRemindersRepository: Emitting ${reminders.length} reminders to stream');
+      _controller.add(reminders);
+    } catch (e) {
+      debugPrint('SupabaseRemindersRepository: Error refreshing: $e');
+      _controller.addError(e);
+    }
   }
 
   /// Get all reminders for current user
@@ -102,6 +106,9 @@ class SupabaseRemindersRepository implements IRemindersRepository {
 
       await _supabase.from('reminders').insert(data);
       debugPrint('SupabaseRemindersRepository: Reminder created successfully');
+
+      // Refresh stream to update UI
+      await _refreshReminders();
     } catch (e) {
       debugPrint('SupabaseRemindersRepository: Error creating reminder: $e');
       rethrow;
@@ -126,6 +133,9 @@ class SupabaseRemindersRepository implements IRemindersRepository {
           .eq('user_id', _currentUserId!);
 
       debugPrint('SupabaseRemindersRepository: Reminder updated successfully');
+
+      // Refresh stream to update UI
+      await _refreshReminders();
     } catch (e) {
       debugPrint('SupabaseRemindersRepository: Error updating reminder: $e');
       rethrow;
@@ -147,6 +157,9 @@ class SupabaseRemindersRepository implements IRemindersRepository {
           .eq('user_id', _currentUserId!);
 
       debugPrint('SupabaseRemindersRepository: Reminder deleted successfully');
+
+      // Refresh stream to update UI
+      await _refreshReminders();
     } catch (e) {
       debugPrint('SupabaseRemindersRepository: Error deleting reminder: $e');
       rethrow;
