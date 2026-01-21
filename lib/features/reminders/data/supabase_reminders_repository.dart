@@ -2,9 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ping/features/reminders/domain/reminder.dart';
 import 'package:ping/features/reminders/domain/recurrence_rule.dart';
+import 'package:ping/features/reminders/data/i_reminders_repository.dart';
 
 /// Repository for syncing reminders with Supabase
-class SupabaseRemindersRepository {
+class SupabaseRemindersRepository implements IRemindersRepository {
   final SupabaseClient _supabase = Supabase.instance.client;
 
   /// Get current user ID
@@ -199,5 +200,23 @@ class SupabaseRemindersRepository {
       'version': reminder.version,
       'updated_at': DateTime.now().toIso8601String(),
     };
+  }
+
+  /// Get all active reminders
+  @override
+  Future<List<Reminder>> getActiveReminders() async {
+    final allReminders = await getReminders();
+    return allReminders
+        .where((r) => r.status == ReminderStatus.active)
+        .toList();
+  }
+
+  /// Get completed reminders (history)
+  @override
+  Future<List<Reminder>> getCompletedReminders() async {
+    final allReminders = await getReminders();
+    return allReminders
+        .where((r) => r.status == ReminderStatus.completed)
+        .toList();
   }
 }

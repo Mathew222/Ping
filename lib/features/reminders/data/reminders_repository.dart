@@ -1,18 +1,19 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:ping/features/reminders/domain/reminder.dart';
+import 'package:ping/features/reminders/data/i_reminders_repository.dart';
 
 /// Repository for managing reminders
-/// 
+///
 /// Uses singleton pattern to maintain state across the app.
 /// Currently uses in-memory storage for development.
 /// TODO: Implement Drift database and Firebase sync
-class RemindersRepository {
+class RemindersRepository implements IRemindersRepository {
   // Singleton instance
   static final RemindersRepository _instance = RemindersRepository._internal();
   factory RemindersRepository() => _instance;
   RemindersRepository._internal();
-  
+
   // In-memory storage
   final Map<String, Reminder> _reminders = {};
   final _controller = StreamController<List<Reminder>>.broadcast();
@@ -31,7 +32,8 @@ class RemindersRepository {
 
   /// Create a new reminder
   Future<void> createReminder(Reminder reminder) async {
-    debugPrint('RemindersRepository: Creating reminder "${reminder.title}" (${reminder.id})');
+    debugPrint(
+        'RemindersRepository: Creating reminder "${reminder.title}" (${reminder.id})');
     _reminders[reminder.id] = reminder;
     _emit();
     debugPrint('RemindersRepository: Now have ${_reminders.length} reminders');
@@ -57,15 +59,15 @@ class RemindersRepository {
   /// Get all active reminders
   Future<List<Reminder>> getActiveReminders() async {
     return _reminders.values
-      .where((r) => r.status == ReminderStatus.active)
-      .toList();
+        .where((r) => r.status == ReminderStatus.active)
+        .toList();
   }
 
   /// Get completed reminders (history)
   Future<List<Reminder>> getCompletedReminders() async {
     return _reminders.values
-      .where((r) => r.status == ReminderStatus.completed)
-      .toList();
+        .where((r) => r.status == ReminderStatus.completed)
+        .toList();
   }
 
   void _emit() {
