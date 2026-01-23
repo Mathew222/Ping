@@ -113,7 +113,7 @@ class NotificationService {
       scheduledTime,
       _getNotificationDetails(reminder),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      payload: reminder.id,
+      payload: '${reminder.id}|${reminder.lastSnoozeDuration ?? ""}',
     );
   }
 
@@ -128,7 +128,7 @@ class NotificationService {
       reminder.title,
       reminder.body ?? 'Tap to view',
       _getNotificationDetails(reminder),
-      payload: reminder.id,
+      payload: '${reminder.id}|${reminder.lastSnoozeDuration ?? ""}',
     );
   }
 
@@ -203,7 +203,12 @@ class NotificationService {
     debugPrint('  Input: ${response.input}');
     debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
-    final reminderId = response.payload;
+    // Parse payload: "id|duration"
+    final parts = response.payload?.split('|') ?? [];
+    final reminderId = parts.isNotEmpty ? parts[0] : null;
+    final payloadDuration =
+        parts.length > 1 && parts[1].isNotEmpty ? int.tryParse(parts[1]) : null;
+
     if (reminderId == null) {
       debugPrint('NotificationService: No payload found, ignoring');
       return;
@@ -218,12 +223,14 @@ class NotificationService {
         debugPrint('NotificationService: Auto-dismissed notification');
         break;
       case 'snooze':
+        // Use payload duration if available, otherwise default
+        final duration = payloadDuration ?? _lastSnoozeDuration;
         debugPrint(
-            'NotificationService: Calling SNOOZE_QUICK action with $_lastSnoozeDuration minutes');
-        onActionReceived?.call(reminderId, 'SNOOZE_QUICK', _lastSnoozeDuration);
+            'NotificationService: Calling SNOOZE_QUICK action with $duration minutes');
+        onActionReceived?.call(reminderId, 'SNOOZE_QUICK', duration);
         // Auto-dismiss and show feedback
         _plugin.cancel(reminderId.hashCode);
-        _showSnoozeConfirmation(reminderId, _lastSnoozeDuration);
+        _showSnoozeConfirmation(reminderId, duration);
         debugPrint(
             'NotificationService: Auto-dismissed and showing snooze feedback');
         break;
