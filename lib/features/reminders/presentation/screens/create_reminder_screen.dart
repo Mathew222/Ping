@@ -225,37 +225,6 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
     ).animate().fadeIn(duration: 200.ms, delay: 200.ms);
   }
 
-  Widget _buildLocationPicker() {
-    return GestureDetector(
-      onTap: _pickLocation,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              Icons.navigation_outlined,
-              color: PingTheme.textSecondary,
-              size: 20,
-            ),
-            const SizedBox(width: 12),
-            Text(
-              _selectedLocation ?? 'Home',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: PingTheme.textPrimary,
-              ),
-            ),
-          ],
-        ),
-      ),
-    ).animate().fadeIn(duration: 200.ms, delay: 200.ms);
-  }
-
   Widget _buildSubmitButton() {
     return SizedBox(
       width: double.infinity,
@@ -473,10 +442,6 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
     if (time != null) {
       setState(() => _selectedTime = time);
     }
-  }
-
-  void _pickLocation() {
-    // TODO: Implement location picker
   }
 
   String _formatSnoozeDuration(int minutes) {
