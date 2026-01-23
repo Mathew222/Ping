@@ -204,18 +204,13 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
               children: [
                 Text(
                   _formatTime(_selectedTime),
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: PingTheme.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 Text(
                   _selectedTime.hour < 12 ? 'AM' : 'PM',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: PingTheme.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
             ),
@@ -306,19 +301,14 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
                   children: [
                     Text(
                       'Default Snooze Duration',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: PingTheme.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       _formatSnoozeDuration(_defaultSnoozeDuration),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: PingTheme.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
                 ),
