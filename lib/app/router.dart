@@ -275,12 +275,14 @@ class _NavButton extends StatelessWidget {
         width: 48,
         height: 48,
         decoration: BoxDecoration(
-          color: isSelected ? PingTheme.cardWhite : Colors.transparent,
+          color: isSelected
+              ? Theme.of(context).scaffoldBackgroundColor
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(14),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: PingTheme.shadowDark.withAlpha(30),
+                    color: Colors.black.withAlpha(30),
                     offset: const Offset(2, 2),
                     blurRadius: 6,
                   ),

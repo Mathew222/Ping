@@ -366,9 +366,9 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(20),
-          ),
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Row(
         children: [
           Expanded(
@@ -389,7 +389,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: PingTheme.bgLight,
+                    color: Theme.of(context).scaffoldBackgroundColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
