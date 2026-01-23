@@ -7,7 +7,6 @@ import 'package:ping/app/theme/ping_theme.dart';
 import 'package:ping/features/reminders/domain/reminder.dart';
 import 'package:ping/features/reminders/domain/recurrence_rule.dart';
 import 'package:ping/features/reminders/presentation/providers/reminders_provider.dart';
-import 'package:ping/features/reminders/presentation/widgets/recurrence_editor.dart';
 
 /// Create reminder screen - neumorphic design
 class CreateReminderScreen extends ConsumerStatefulWidget {
@@ -479,9 +478,10 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
         rule = _customRecurrenceRule;
       } else if (_selectedFrequency != 'Once') {
         // Use simple recurrence rule
+        final interval = _selectedFrequency == 'Yearly' ? 12 : 1;
         rule = RecurrenceRule(
           type: _getRecurrenceType(_selectedFrequency),
-          interval: 1,
+          interval: interval,
           startDate: triggerAt,
         );
       }
@@ -536,9 +536,8 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
       case 'Weekly':
         return RecurrenceType.weekly;
       case 'Monthly':
-        return RecurrenceType.monthly;
       case 'Yearly':
-        return RecurrenceType.yearly;
+        return RecurrenceType.monthly;
       default:
         return RecurrenceType.daily;
     }
