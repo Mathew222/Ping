@@ -55,9 +55,9 @@ class _SplashScreenState extends State<SplashScreen>
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              PingTheme.primaryMint,
-              PingTheme.primaryMint.withBlue(180),
-              PingTheme.dustyRose.withOpacity(0.8),
+              PingTheme.primaryRed,
+              PingTheme.primaryRed.withBlue(180),
+              PingTheme.textSecondary.withOpacity(0.8),
             ],
           ),
         ),
@@ -90,7 +90,7 @@ class _SplashScreenState extends State<SplashScreen>
                     child: Icon(
                       Icons.notifications_active_rounded,
                       size: 50,
-                      color: PingTheme.primaryMint,
+                      color: PingTheme.primaryRed,
                     ),
                   )
                       .animate(controller: _controller)

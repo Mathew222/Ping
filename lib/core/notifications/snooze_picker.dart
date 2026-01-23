@@ -101,10 +101,10 @@ class _CustomSnoozeSheetState extends State<CustomSnoozeSheet> {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: PingTheme.primaryOrange.withAlpha(30),
+                      color: PingTheme.primaryRed.withAlpha(30),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(Icons.snooze, color: PingTheme.primaryOrange, size: 22),
+                    child: Icon(Icons.snooze, color: PingTheme.primaryRed, size: 22),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -157,11 +157,11 @@ class _CustomSnoozeSheetState extends State<CustomSnoozeSheet> {
                       duration: 150.ms,
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       decoration: BoxDecoration(
-                        color: isSelected ? PingTheme.primaryOrange : PingTheme.bgLight,
+                        color: isSelected ? PingTheme.primaryRed : PingTheme.bgLight,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: isSelected 
-                              ? PingTheme.primaryOrange 
+                              ? PingTheme.primaryRed 
                               : PingTheme.textSecondary.withAlpha(50),
                         ),
                       ),
@@ -185,11 +185,11 @@ class _CustomSnoozeSheetState extends State<CustomSnoozeSheet> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: _showCustomInput ? PingTheme.primaryMint.withAlpha(20) : PingTheme.bgLight,
+                    color: _showCustomInput ? PingTheme.primaryRed.withAlpha(20) : PingTheme.bgLight,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: _showCustomInput 
-                          ? PingTheme.primaryMint 
+                          ? PingTheme.primaryRed 
                           : PingTheme.textSecondary.withAlpha(50),
                     ),
                   ),
@@ -197,7 +197,7 @@ class _CustomSnoozeSheetState extends State<CustomSnoozeSheet> {
                     children: [
                       Icon(
                         Icons.edit_outlined,
-                        color: _showCustomInput ? PingTheme.primaryMint : PingTheme.textSecondary,
+                        color: _showCustomInput ? PingTheme.primaryRed : PingTheme.textSecondary,
                         size: 20,
                       ),
                       const SizedBox(width: 12),
@@ -205,7 +205,7 @@ class _CustomSnoozeSheetState extends State<CustomSnoozeSheet> {
                         'Custom duration (e.g., 22 minutes)',
                         style: TextStyle(
                           fontSize: 14,
-                          color: _showCustomInput ? PingTheme.primaryMint : PingTheme.textSecondary,
+                          color: _showCustomInput ? PingTheme.primaryRed : PingTheme.textSecondary,
                         ),
                       ),
                       const Spacer(),
@@ -263,7 +263,7 @@ class _CustomSnoozeSheetState extends State<CustomSnoozeSheet> {
                 child: ElevatedButton(
                   onPressed: _selectedDuration != null ? _confirmSnooze : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: PingTheme.primaryOrange,
+                    backgroundColor: PingTheme.primaryRed,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(

@@ -23,8 +23,8 @@ class RemindersSummaryCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            PingTheme.primaryMint.withAlpha(200),
-            PingTheme.dustyRose.withAlpha(180),
+            PingTheme.primaryRed.withAlpha(200),
+            PingTheme.textSecondary.withAlpha(180),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,

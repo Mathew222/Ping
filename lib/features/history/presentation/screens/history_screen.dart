@@ -88,12 +88,12 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: PingTheme.primaryMint.withAlpha(30),
+                color: PingTheme.primaryRed.withAlpha(30),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
                 Icons.history_rounded,
-                color: PingTheme.primaryMint,
+                color: PingTheme.primaryRed,
                 size: 20,
               ),
             ),
@@ -124,7 +124,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
                   color:
-                      isSelected ? PingTheme.primaryMint : Colors.transparent,
+                      isSelected ? PingTheme.primaryRed : Colors.transparent,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
@@ -153,12 +153,12 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             width: 28,
             height: 28,
             decoration: BoxDecoration(
-              color: PingTheme.primaryMint.withAlpha(20),
+              color: PingTheme.primaryRed.withAlpha(20),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
               Icons.calendar_today_outlined,
-              color: PingTheme.primaryMint,
+              color: PingTheme.primaryRed,
               size: 14,
             ),
           ),
@@ -168,7 +168,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: PingTheme.primaryMint,
+              color: PingTheme.primaryRed,
               letterSpacing: 0.5,
             ),
           ),
@@ -205,12 +205,12 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: PingTheme.primaryMint.withAlpha(30),
+              color: PingTheme.primaryRed.withAlpha(30),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Icon(
               Icons.notifications_none_rounded,
-              color: PingTheme.primaryMint,
+              color: PingTheme.primaryRed,
               size: 22,
             ),
           ),

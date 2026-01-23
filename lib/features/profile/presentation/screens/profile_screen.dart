@@ -36,13 +36,13 @@ class ProfileScreen extends ConsumerWidget {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      PingTheme.primaryMint,
-                      PingTheme.dustyRose,
+                      PingTheme.primaryRed,
+                      PingTheme.textSecondary,
                     ],
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: PingTheme.primaryMint.withOpacity(0.3),
+                      color: PingTheme.primaryRed.withOpacity(0.3),
                       blurRadius: 20,
                       spreadRadius: 5,
                     ),

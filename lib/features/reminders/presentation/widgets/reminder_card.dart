@@ -138,15 +138,15 @@ class _ReminderCardState extends ConsumerState<ReminderCard> {
     switch (widget.reminder.priority) {
       case ReminderPriority.high:
         icon = Icons.priority_high_rounded;
-        color = PingTheme.primaryOrange;
+        color = PingTheme.primaryRed;
         break;
       case ReminderPriority.low:
         icon = Icons.bookmark_outline_rounded;
-        color = PingTheme.dustyRose;
+        color = PingTheme.textSecondary;
         break;
       default:
         icon = Icons.notifications_none_rounded;
-        color = PingTheme.primaryMint;
+        color = PingTheme.primaryRed;
     }
 
     final iconWidget = Container(
@@ -200,9 +200,9 @@ class _ReminderCardState extends ConsumerState<ReminderCard> {
         height: 28,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: PingTheme.dustyRose.withAlpha(40),
+          color: PingTheme.textSecondary.withAlpha(40),
           border: Border.all(
-            color: PingTheme.dustyRose.withAlpha(100),
+            color: PingTheme.textSecondary.withAlpha(100),
             width: 2,
           ),
         ),
@@ -260,7 +260,7 @@ class _ReminderCardState extends ConsumerState<ReminderCard> {
               },
               child: Text(
                 'Complete This Occurrence',
-                style: TextStyle(color: PingTheme.primaryMint),
+                style: TextStyle(color: PingTheme.primaryRed),
               ),
             ),
             TextButton(
@@ -271,7 +271,7 @@ class _ReminderCardState extends ConsumerState<ReminderCard> {
               child: Text(
                 'Stop Recurring',
                 style: TextStyle(
-                  color: PingTheme.primaryOrange,
+                  color: PingTheme.primaryRed,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -370,12 +370,12 @@ class ExpandedReminderCard extends StatelessWidget {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: PingTheme.primaryMint.withAlpha(30),
+                    color: PingTheme.primaryRed.withAlpha(30),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
                     Icons.notifications_none_rounded,
-                    color: PingTheme.primaryMint,
+                    color: PingTheme.primaryRed,
                     size: 20,
                   ),
                 ),

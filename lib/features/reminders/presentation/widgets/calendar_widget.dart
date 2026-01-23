@@ -264,56 +264,51 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
         duration: 200.ms,
         decoration: BoxDecoration(
           color: isSelected
-              ? PingTheme.dustyRose
+              ? PingTheme.textSecondary
               : isToday
-                  ? PingTheme.primaryMint.withAlpha(30)
+                  ? PingTheme.primaryRed.withAlpha(30)
                   : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: isToday && !isSelected
-              ? Border.all(color: PingTheme.primaryMint, width: 2)
+              ? Border.all(color: PingTheme.primaryRed, width: 2)
               : null,
         ),
-        child: Stack(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Center(
-              child: Text(
-                '${date.day}',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight:
-                      isSelected || isToday ? FontWeight.w600 : FontWeight.w500,
-                  color: isSelected
-                      ? Colors.white
-                      : isPast
-                          ? PingTheme.textSecondary.withAlpha(100)
-                          : PingTheme.textPrimary,
-                ),
+            // Date number
+            Text(
+              '${date.day}',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight:
+                    isSelected || isToday ? FontWeight.w600 : FontWeight.w500,
+                color: isSelected
+                    ? Colors.white
+                    : isPast
+                        ? PingTheme.textSecondary.withAlpha(100)
+                        : PingTheme.textPrimary,
               ),
             ),
-            if (hasReminders)
-              Positioned(
-                bottom: 4,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                    decoration: BoxDecoration(
-                      color: isSelected ? Colors.white : PingTheme.dustyRose,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      reminderCount > 9 ? '9+' : '$reminderCount',
-                      style: TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w600,
-                        color: isSelected ? PingTheme.dustyRose : Colors.white,
-                      ),
-                    ),
+            // Reminder count badge
+            if (hasReminders) ...[
+              const SizedBox(height: 2),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                decoration: BoxDecoration(
+                  color: isSelected ? Colors.white : PingTheme.textSecondary,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  reminderCount > 9 ? '9+' : '$reminderCount',
+                  style: TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w600,
+                    color: isSelected ? PingTheme.textSecondary : Colors.white,
                   ),
                 ),
               ),
+            ],
           ],
         ),
       ),

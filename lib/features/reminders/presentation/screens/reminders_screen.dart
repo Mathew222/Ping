@@ -177,13 +177,13 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
-                      color: PingTheme.primaryMint.withAlpha(30),
+                      color: PingTheme.primaryRed.withAlpha(30),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.event_available,
                       size: 40,
-                      color: PingTheme.primaryMint,
+                      color: PingTheme.primaryRed,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -275,13 +275,13 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        PingTheme.primaryMint,
-                        PingTheme.dustyRose,
+                        PingTheme.primaryRed,
+                        PingTheme.textSecondary,
                       ],
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: PingTheme.primaryMint.withOpacity(0.3),
+                        color: PingTheme.primaryRed.withOpacity(0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -370,7 +370,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: PingTheme.paleRose,
+                    color: PingTheme.bgLight,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -378,7 +378,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
-                      color: PingTheme.dustyRose,
+                      color: PingTheme.textSecondary,
                     ),
                   ),
                 ),
@@ -404,7 +404,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
               value: percent / 100,
               strokeWidth: 6,
               backgroundColor: PingTheme.bgLight,
-              valueColor: AlwaysStoppedAnimation(PingTheme.dustyRose),
+              valueColor: AlwaysStoppedAnimation(PingTheme.textSecondary),
             ),
           ),
           Center(

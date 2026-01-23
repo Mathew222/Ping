@@ -44,13 +44,13 @@ class EditReminderScreen extends ConsumerWidget {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: PingTheme.primaryMint.withAlpha(30),
+                color: PingTheme.primaryRed.withAlpha(30),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.edit_outlined,
                 size: 40,
-                color: PingTheme.primaryMint,
+                color: PingTheme.primaryRed,
               ),
             ),
             const SizedBox(height: 24),

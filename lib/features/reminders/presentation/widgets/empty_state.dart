@@ -29,13 +29,13 @@ class EmptyState extends StatelessWidget {
               width: 100,
               height: 100,
               decoration: BoxDecoration(
-                color: PingTheme.primaryMint.withAlpha(30),
+                color: PingTheme.primaryRed.withAlpha(30),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 icon,
                 size: 48,
-                color: PingTheme.primaryMint,
+                color: PingTheme.primaryRed,
               ),
             )
             .animate(onPlay: (controller) => controller.repeat(reverse: true))

@@ -151,7 +151,7 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
             padding: const EdgeInsets.only(right: 12),
             child: Icon(
               Icons.mic,
-              color: PingTheme.primaryOrange,
+              color: PingTheme.primaryRed,
               size: 24,
             ),
           ),
@@ -180,7 +180,7 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             decoration: PingTheme.neumorphicPill(
               selected: isSelected,
-              color: PingTheme.primaryOrange,
+              color: PingTheme.primaryRed,
             ),
             child: Text(
               freq,
@@ -208,12 +208,12 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: PingTheme.primaryOrange.withAlpha(30),
+                color: PingTheme.primaryRed.withAlpha(30),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
                 Icons.access_time_rounded,
-                color: PingTheme.primaryOrange,
+                color: PingTheme.primaryRed,
                 size: 18,
               ),
             ),
@@ -278,7 +278,7 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
       child: ElevatedButton(
         onPressed: _isLoading ? null : _createReminder,
         style: ElevatedButton.styleFrom(
-          backgroundColor: PingTheme.primaryOrange,
+          backgroundColor: PingTheme.primaryRed,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 18),
           shape: RoundedRectangleBorder(
@@ -338,12 +338,12 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: PingTheme.primaryOrange.withAlpha(25),
+                    color: PingTheme.primaryRed.withAlpha(25),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
                     Icons.snooze,
-                    color: PingTheme.primaryOrange,
+                    color: PingTheme.primaryRed,
                     size: 20,
                   ),
                 ),
@@ -565,7 +565,7 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
           SnackBar(
             content: Text(
                 'Reminder set for ${_formatTime(TimeOfDay.fromDateTime(actualTriggerTime))}'),
-            backgroundColor: PingTheme.primaryMint,
+            backgroundColor: PingTheme.primaryRed,
           ),
         );
         context.pop();
@@ -632,7 +632,7 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Custom recurrence: ${_formatRecurrence(rule)}'),
-            backgroundColor: PingTheme.primaryMint,
+            backgroundColor: PingTheme.primaryRed,
           ),
         );
       }

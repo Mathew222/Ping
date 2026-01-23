@@ -161,12 +161,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: PingTheme.primaryMint.withAlpha(30),
+            color: PingTheme.primaryRed.withAlpha(30),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(
             Icons.settings_outlined,
-            color: PingTheme.primaryMint,
+            color: PingTheme.primaryRed,
             size: 20,
           ),
         ),
@@ -190,7 +190,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: PingTheme.primaryMint,
+              color: PingTheme.primaryRed,
               letterSpacing: 0.5,
             ),
           ),
@@ -229,10 +229,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: PingTheme.primaryMint.withAlpha(20),
+                  color: PingTheme.primaryRed.withAlpha(20),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(icon, color: PingTheme.primaryMint, size: 18),
+                child: Icon(icon, color: PingTheme.primaryRed, size: 18),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -282,10 +282,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: PingTheme.primaryMint.withAlpha(20),
+              color: PingTheme.primaryRed.withAlpha(20),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: PingTheme.primaryMint, size: 18),
+            child: Icon(icon, color: PingTheme.primaryRed, size: 18),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -304,7 +304,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               HapticFeedback.selectionClick();
               onChanged(val);
             },
-            activeColor: PingTheme.primaryMint,
+            activeColor: PingTheme.primaryRed,
           ),
         ],
       ),
@@ -360,7 +360,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ...durations.map((d) => ListTile(
                   title: Text('$d minutes'),
                   trailing: _defaultSnooze == d
-                      ? Icon(Icons.check, color: PingTheme.primaryMint)
+                      ? Icon(Icons.check, color: PingTheme.primaryRed)
                       : null,
                   onTap: () {
                     setState(() => _defaultSnooze = d);
@@ -403,7 +403,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   title: Text(t),
                   trailing: _theme == t
-                      ? Icon(Icons.check, color: PingTheme.primaryMint)
+                      ? Icon(Icons.check, color: PingTheme.primaryRed)
                       : null,
                   onTap: () {
                     setState(() => _theme = t);

@@ -263,7 +263,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 ElevatedButton(
                   onPressed: _isLoading ? null : _signUp,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: PingTheme.primaryMint,
+                    backgroundColor: PingTheme.primaryRed,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),

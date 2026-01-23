@@ -209,8 +209,8 @@ class _BottomNavBarWithFABState extends State<_BottomNavBarWithFAB>
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      PingTheme.primaryMint,
-                      PingTheme.primaryMint.withGreen(200),
+                      PingTheme.primaryRed,
+                      PingTheme.primaryRed.withGreen(200),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -218,7 +218,7 @@ class _BottomNavBarWithFABState extends State<_BottomNavBarWithFAB>
                   borderRadius: BorderRadius.circular(18),
                   boxShadow: [
                     BoxShadow(
-                      color: PingTheme.primaryMint.withAlpha(100),
+                      color: PingTheme.primaryRed.withAlpha(100),
                       offset: const Offset(0, 4),
                       blurRadius: 12,
                     ),

@@ -101,7 +101,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: PingTheme.primaryMint.withOpacity(0.3),
+                        color: PingTheme.primaryRed.withOpacity(0.3),
                         blurRadius: 20,
                         spreadRadius: 5,
                       ),
@@ -110,7 +110,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   child: Icon(
                     Icons.notifications_active_rounded,
                     size: 40,
-                    color: PingTheme.primaryMint,
+                    color: PingTheme.primaryRed,
                   ),
                 )
                     .animate()
@@ -232,7 +232,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ElevatedButton(
                   onPressed: _isLoading ? null : _signIn,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: PingTheme.primaryMint,
+                    backgroundColor: PingTheme.primaryRed,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -313,7 +313,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       child: Text(
                         'Sign Up',
                         style: TextStyle(
-                          color: PingTheme.primaryMint,
+                          color: PingTheme.primaryRed,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
