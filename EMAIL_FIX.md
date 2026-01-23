@@ -1,4 +1,4 @@
-# Fixing Email Confirmation Issue
+yes implement # Fixing Email Confirmation Issue
 
 ## The Problem
 When you sign up, Supabase sends a confirmation email with a link. That link tries to redirect to a URL that doesn't exist yet, causing an error.

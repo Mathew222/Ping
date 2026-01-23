@@ -287,7 +287,7 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: const [
             Text(
               'Set Reminder',
               style: TextStyle(
@@ -295,7 +295,7 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Icon(Icons.check, size: 20),
           ],
         ),

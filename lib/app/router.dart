@@ -17,6 +17,7 @@ import 'package:ping/features/profile/presentation/screens/profile_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
+    navigatorKey: ref.read(navigatorKeyProvider), // Use shared navigator key
     initialLocation: '/splash',
     redirect: (context, state) {
       // Skip auth check for splash, login, and signup
@@ -104,6 +105,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
+});
+
+/// Provider for the global navigator key
+final navigatorKeyProvider = Provider<GlobalKey<NavigatorState>>((ref) {
+  return GlobalKey<NavigatorState>();
 });
 
 /// Main app shell with centered FAB bottom navigation

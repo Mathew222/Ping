@@ -183,9 +183,12 @@ class _ReminderCardState extends ConsumerState<ReminderCard> {
     }
 
     if (widget.reminder.snoozedUntil != null) {
-      return _StatusBadge(
-        label: 'SNOOZED',
-        color: PingTheme.statusSnoozed,
+      return GestureDetector(
+        onTap: () => _toggleComplete(ref),
+        child: _StatusBadge(
+          label: 'SNOOZED',
+          color: PingTheme.statusSnoozed,
+        ),
       );
     }
 
@@ -214,8 +217,13 @@ class _ReminderCardState extends ConsumerState<ReminderCard> {
   void _toggleComplete(WidgetRef ref) async {
     HapticFeedback.mediumImpact();
 
+    debugPrint(
+        'ReminderCard: Toggle complete tapped for ${widget.reminder.id}');
+    debugPrint('ReminderCard: Is recurring: ${widget.reminder.isRecurring}');
+
     // If recurring, show dialog with options
     if (widget.reminder.isRecurring) {
+      debugPrint('ReminderCard: Showing recurring reminder dialog');
       final result = await showDialog<String>(
         context: ref.context,
         builder: (context) => AlertDialog(
@@ -235,21 +243,31 @@ class _ReminderCardState extends ConsumerState<ReminderCard> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context, 'cancel'),
+              onPressed: () {
+                debugPrint('ReminderCard: Cancel button tapped');
+                Navigator.pop(context, 'cancel');
+              },
               child: Text(
                 'Cancel',
                 style: TextStyle(color: PingTheme.textSecondary),
               ),
             ),
             TextButton(
-              onPressed: () => Navigator.pop(context, 'complete'),
+              onPressed: () {
+                debugPrint(
+                    'ReminderCard: Complete This Occurrence button tapped');
+                Navigator.pop(context, 'complete');
+              },
               child: Text(
                 'Complete This Occurrence',
                 style: TextStyle(color: PingTheme.primaryMint),
               ),
             ),
             TextButton(
-              onPressed: () => Navigator.pop(context, 'stop'),
+              onPressed: () {
+                debugPrint('ReminderCard: Stop Recurring button tapped');
+                Navigator.pop(context, 'stop');
+              },
               child: Text(
                 'Stop Recurring',
                 style: TextStyle(
@@ -262,15 +280,20 @@ class _ReminderCardState extends ConsumerState<ReminderCard> {
         ),
       );
 
+      debugPrint('ReminderCard: Dialog result: $result');
+
       if (result == 'complete') {
+        debugPrint('ReminderCard: Calling complete action');
         ref.read(reminderActionsProvider.notifier).complete(widget.reminder.id);
       } else if (result == 'stop') {
+        debugPrint('ReminderCard: Calling stopRecurring action');
         ref
             .read(reminderActionsProvider.notifier)
             .stopRecurring(widget.reminder.id);
       }
     } else {
       // Non-recurring, just complete it
+      debugPrint('ReminderCard: Non-recurring reminder, completing');
       ref.read(reminderActionsProvider.notifier).complete(widget.reminder.id);
     }
   }

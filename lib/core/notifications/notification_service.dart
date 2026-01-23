@@ -9,16 +9,18 @@ import 'package:ping/features/reminders/domain/reminder.dart';
 class NotificationService {
   NotificationService._();
   static final NotificationService instance = NotificationService._();
-  
-  final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
-  
+
+  final FlutterLocalNotificationsPlugin _plugin =
+      FlutterLocalNotificationsPlugin();
+
   // Remember last snooze duration for quick snooze
   int _lastSnoozeDuration = 10;
   int get lastSnoozeDuration => _lastSnoozeDuration;
   set lastSnoozeDuration(int value) => _lastSnoozeDuration = value;
-  
+
   // Callback when user interacts with notification
-  Function(String reminderId, String action, int? snoozeDuration)? onActionReceived;
+  Function(String reminderId, String action, int? snoozeDuration)?
+      onActionReceived;
 
   /// Initialize the notification service
   Future<void> initialize() async {
@@ -29,39 +31,43 @@ class NotificationService {
 
     // Initialize timezone
     tz_data.initializeTimeZones();
-    
-    debugPrint('NotificationService: Initializing for ${Platform.operatingSystem}');
-    
+
+    debugPrint(
+        'NotificationService: Initializing for ${Platform.operatingSystem}');
+
     // Android settings
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
-    
+    const androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+
     // iOS settings
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
     );
-    
+
     const initSettings = InitializationSettings(
       android: androidSettings,
       iOS: iosSettings,
     );
-    
+
     await _plugin.initialize(
       initSettings,
       onDidReceiveNotificationResponse: _handleNotificationResponse,
       onDidReceiveBackgroundNotificationResponse: _handleBackgroundResponse,
     );
-    
+
     // Request permissions on Android 13+
     if (Platform.isAndroid) {
-      await _plugin.resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()?.requestNotificationsPermission();
+      await _plugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.requestNotificationsPermission();
     }
-    
+
     // Create notification channel for Android
     await _createNotificationChannel();
-    
+
     debugPrint('NotificationService: Initialized successfully');
   }
 
@@ -74,22 +80,26 @@ class NotificationService {
       playSound: true,
       enableVibration: true,
     );
-    
-    await _plugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
+
+    await _plugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
   }
 
   /// Schedule a reminder notification
   Future<void> scheduleReminder(Reminder reminder) async {
     if (kIsWeb) {
-      debugPrint('NotificationService: Web - would schedule "${reminder.title}"');
+      debugPrint(
+          'NotificationService: Web - would schedule "${reminder.title}"');
       return;
     }
 
-    debugPrint('NotificationService: Scheduling "${reminder.title}" for ${reminder.triggerAt}');
-    
+    debugPrint(
+        'NotificationService: Scheduling "${reminder.title}" for ${reminder.triggerAt}');
+
     final scheduledTime = tz.TZDateTime.from(reminder.triggerAt, tz.local);
-    
+
     // If time is in the past, show immediately
     if (scheduledTime.isBefore(tz.TZDateTime.now(tz.local))) {
       await showReminder(reminder);
@@ -110,9 +120,9 @@ class NotificationService {
   /// Show an immediate notification
   Future<void> showReminder(Reminder reminder) async {
     if (kIsWeb) return;
-    
+
     debugPrint('NotificationService: Showing "${reminder.title}" immediately');
-    
+
     await _plugin.show(
       reminder.id.hashCode,
       reminder.title,
@@ -138,7 +148,7 @@ class NotificationService {
 
   NotificationDetails _getNotificationDetails(Reminder reminder) {
     final snoozeDuration = reminder.lastSnoozeDuration ?? _lastSnoozeDuration;
-    
+
     // Android notification with action buttons
     final androidDetails = AndroidNotificationDetails(
       'ping_reminders',
@@ -167,7 +177,7 @@ class NotificationService {
         ),
       ],
     );
-    
+
     // iOS notification
     const iosDetails = DarwinNotificationDetails(
       presentAlert: true,
@@ -175,7 +185,7 @@ class NotificationService {
       presentSound: true,
       categoryIdentifier: 'reminder_category',
     );
-    
+
     return NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
@@ -183,25 +193,82 @@ class NotificationService {
   }
 
   void _handleNotificationResponse(NotificationResponse response) {
-    debugPrint('NotificationService: Response - action: ${response.actionId}, payload: ${response.payload}');
-    
+    debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    debugPrint('NotificationService: Notification Response Received');
+    debugPrint('  Action ID: ${response.actionId ?? "TAP (no action)"}');
+    debugPrint('  Payload: ${response.payload}');
+    debugPrint('  Input: ${response.input}');
+    debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
     final reminderId = response.payload;
-    if (reminderId == null) return;
-    
+    if (reminderId == null) {
+      debugPrint('NotificationService: No payload found, ignoring');
+      return;
+    }
+
     switch (response.actionId) {
       case 'complete':
+        debugPrint('NotificationService: Calling COMPLETE action');
         onActionReceived?.call(reminderId, 'COMPLETE', null);
+        // Auto-dismiss notification
+        _plugin.cancel(reminderId.hashCode);
+        debugPrint('NotificationService: Auto-dismissed notification');
         break;
       case 'snooze':
+        debugPrint(
+            'NotificationService: Calling SNOOZE_QUICK action with $_lastSnoozeDuration minutes');
         onActionReceived?.call(reminderId, 'SNOOZE_QUICK', _lastSnoozeDuration);
+        // Auto-dismiss and show feedback
+        _plugin.cancel(reminderId.hashCode);
+        _showSnoozeConfirmation(reminderId, _lastSnoozeDuration);
+        debugPrint(
+            'NotificationService: Auto-dismissed and showing snooze feedback');
         break;
       case 'snooze_custom':
+        debugPrint('NotificationService: Calling SNOOZE_CUSTOM action');
         onActionReceived?.call(reminderId, 'SNOOZE_CUSTOM', null);
+        // Auto-dismiss notification
+        _plugin.cancel(reminderId.hashCode);
+        debugPrint('NotificationService: Auto-dismissed notification');
         break;
       default:
         // Tapped on notification body - open app
+        debugPrint(
+            'NotificationService: Calling TAP action (notification body tapped)');
         onActionReceived?.call(reminderId, 'TAP', null);
     }
+  }
+
+  /// Show snooze confirmation notification
+  Future<void> _showSnoozeConfirmation(String reminderId, int minutes) async {
+    if (kIsWeb) return;
+
+    debugPrint(
+        'NotificationService: Showing snooze confirmation for $minutes minutes');
+
+    await _plugin.show(
+      reminderId.hashCode + 999999, // Different ID for feedback notification
+      'Reminder Snoozed',
+      'Snoozed for ${CustomSnoozePicker.formatDuration(minutes)}',
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          'ping_reminders',
+          'Ping Reminders',
+          channelDescription: 'Reminder notifications from Ping',
+          importance: Importance.low,
+          priority: Priority.low,
+          playSound: false,
+          enableVibration: false,
+          autoCancel: true,
+          timeoutAfter: 3000, // Auto-dismiss after 3 seconds
+        ),
+        iOS: const DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: false,
+          presentSound: false,
+        ),
+      ),
+    );
   }
 }
 
@@ -215,7 +282,7 @@ void _handleBackgroundResponse(NotificationResponse response) {
 /// Helper class for snooze duration formatting
 class CustomSnoozePicker {
   static const List<int> quickOptions = [5, 10, 15, 20, 30, 45, 60];
-  
+
   static int? parseInput(String input) {
     final trimmed = input.trim().toLowerCase();
     final asNumber = int.tryParse(trimmed);
