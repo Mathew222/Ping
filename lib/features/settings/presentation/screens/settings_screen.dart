@@ -25,7 +25,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final user = ref.watch(currentUserProvider);
 
     return Scaffold(
-      backgroundColor: PingTheme.bgLight,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -196,7 +196,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 12),
           Container(
-            decoration: PingTheme.neumorphicCard,
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(20),
+            ),
             child: Column(children: children),
           ),
         ],
@@ -342,7 +345,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final durations = [5, 10, 15, 20, 30, 45, 60];
     showModalBottomSheet(
       context: context,
-      backgroundColor: PingTheme.cardWhite,
+      backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),

@@ -27,7 +27,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
     final reminders = ref.watch(remindersProvider);
 
     return Scaffold(
-      backgroundColor: PingTheme.bgLight,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: reminders.when(
           loading: () => const Center(child: CircularProgressIndicator()),
@@ -419,7 +419,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
             child: CircularProgressIndicator(
               value: percent / 100,
               strokeWidth: 6,
-              backgroundColor: PingTheme.bgLight,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               valueColor: AlwaysStoppedAnimation(PingTheme.textSecondary),
             ),
           ),

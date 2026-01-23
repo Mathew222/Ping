@@ -20,7 +20,7 @@ class PingApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: PingTheme.lightTheme,
       darkTheme: PingTheme.darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.dark, // Temporarily forced to dark for testing
       routerConfig: router,
     );
   }
