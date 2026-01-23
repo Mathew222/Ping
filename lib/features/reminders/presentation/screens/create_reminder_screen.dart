@@ -157,9 +157,17 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
           child: AnimatedContainer(
             duration: 200.ms,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            decoration: PingTheme.neumorphicPill(
-              selected: isSelected,
-              color: PingTheme.primaryRed,
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? PingTheme.primaryRed
+                  : Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(25),
+              border: isSelected
+                  ? null
+                  : Border.all(
+                      color: Theme.of(context).dividerColor,
+                      width: 1,
+                    ),
             ),
             child: Text(
               freq,
