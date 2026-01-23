@@ -174,7 +174,7 @@ class _ReminderCardState extends ConsumerState<ReminderCard> {
   }
 
   Widget _buildTrailing(BuildContext context, WidgetRef ref) {
-    // Show status badge for completed/snoozed/skipped
+    // Show status badge for completed
     if (widget.reminder.isCompleted) {
       return _StatusBadge(
         label: 'DONE',
@@ -182,13 +182,50 @@ class _ReminderCardState extends ConsumerState<ReminderCard> {
       );
     }
 
+    // For snoozed reminders, show both badge and checkbox
     if (widget.reminder.snoozedUntil != null) {
-      return GestureDetector(
-        onTap: () => _toggleComplete(ref),
-        child: _StatusBadge(
-          label: 'SNOOZED',
-          color: PingTheme.statusSnoozed,
-        ),
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Smaller snoozed badge
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: PingTheme.statusSnoozed.withAlpha(30),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: PingTheme.statusSnoozed,
+                width: 1,
+              ),
+            ),
+            child: Text(
+              'SNOOZED',
+              style: TextStyle(
+                fontSize: 9,
+                fontWeight: FontWeight.w600,
+                color: PingTheme.statusSnoozed,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          // Done button
+          GestureDetector(
+            onTap: () => _toggleComplete(ref),
+            child: Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: PingTheme.textSecondary.withAlpha(40),
+                border: Border.all(
+                  color: PingTheme.textSecondary.withAlpha(100),
+                  width: 2,
+                ),
+              ),
+            ),
+          ),
+        ],
       );
     }
 
