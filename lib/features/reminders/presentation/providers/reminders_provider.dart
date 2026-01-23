@@ -155,6 +155,9 @@ class ReminderActionsNotifier extends StateNotifier<AsyncValue<void>> {
   Future<void> snooze(String id, Duration duration) =>
       snoozeReminder(id, duration);
 
+  /// Convenience shorthand for deleteReminder
+  Future<void> delete(String id) => deleteReminder(id);
+
   /// Update an existing reminder
   Future<void> updateReminder(Reminder reminder) async {
     state = const AsyncValue.loading();
