@@ -22,7 +22,6 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
   final _titleController = TextEditingController();
   String _selectedFrequency = 'Once';
   TimeOfDay _selectedTime = TimeOfDay.now();
-  String? _selectedLocation;
   int _defaultSnoozeDuration = 10; // Default snooze in minutes
   RecurrenceRule? _customRecurrenceRule; // Store custom recurrence rule
   bool _isLoading = false;
@@ -73,32 +72,10 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
 
             const SizedBox(height: 32),
 
-            // Time & Location section
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildSectionLabel('TIME'),
-                      const SizedBox(height: 12),
-                      _buildTimePicker(),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildSectionLabel('LOCATION'),
-                      const SizedBox(height: 12),
-                      _buildLocationPicker(),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+            // Time section
+            _buildSectionLabel('TIME'),
+            const SizedBox(height: 12),
+            _buildTimePicker(),
 
             const SizedBox(height: 32),
 
@@ -132,9 +109,9 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
   Widget _buildTaskInput() {
     return Container(
       decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(20),
-          ),
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: TextField(
         controller: _titleController,
         maxLines: 4,
@@ -205,9 +182,9 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(20),
-          ),
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(20),
+        ),
         child: Row(
           children: [
             Container(
@@ -256,9 +233,9 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(20),
-          ),
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(20),
+        ),
         child: Row(
           children: [
             Icon(
