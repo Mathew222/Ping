@@ -268,20 +268,8 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: PingTheme.textSecondary.withAlpha(50),
+            color: Theme.of(context).dividerColor,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: PingTheme.shadowDark.withAlpha(25),
-              offset: const Offset(2, 2),
-              blurRadius: 8,
-            ),
-            BoxShadow(
-              color: PingTheme.shadowLight,
-              offset: const Offset(-2, -2),
-              blurRadius: 8,
-            ),
-          ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
