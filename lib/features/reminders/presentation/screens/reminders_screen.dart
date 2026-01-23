@@ -64,13 +64,18 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
       return [...active, ...completed];
     }
 
-    final morning = sortReminders(
-        filteredReminders.where((r) => r.triggerAt.hour < 12).toList());
+    final morning = sortReminders(filteredReminders
+        .where((r) => r.triggerAt.hour < 12)
+        .toList()
+        .cast<Reminder>());
     final afternoon = sortReminders(filteredReminders
         .where((r) => r.triggerAt.hour >= 12 && r.triggerAt.hour < 17)
-        .toList());
-    final evening = sortReminders(
-        filteredReminders.where((r) => r.triggerAt.hour >= 17).toList());
+        .toList()
+        .cast<Reminder>());
+    final evening = sortReminders(filteredReminders
+        .where((r) => r.triggerAt.hour >= 17)
+        .toList()
+        .cast<Reminder>());
 
     final completedToday = filteredReminders.where((r) => r.isCompleted).length;
     final totalToday = filteredReminders.length;
