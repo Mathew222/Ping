@@ -5,7 +5,7 @@ import 'package:ping/app/theme/ping_theme.dart';
 import 'package:ping/core/notifications/notification_service.dart';
 
 /// Custom snooze picker bottom sheet
-/// 
+///
 /// Shows quick options (5, 10, 15, 30, 60 min) and custom input
 /// Can be triggered from:
 /// 1. In-app reminder card long press
@@ -38,7 +38,8 @@ class CustomSnoozeSheet extends StatefulWidget {
       builder: (context) => CustomSnoozeSheet(
         reminderId: reminderId,
         reminderTitle: reminderTitle,
-        lastSnoozeDuration: lastSnoozeDuration ?? NotificationService.instance.lastSnoozeDuration,
+        lastSnoozeDuration: lastSnoozeDuration ??
+            NotificationService.instance.lastSnoozeDuration,
         onSnooze: (minutes) => Navigator.of(context).pop(minutes),
       ),
     );
@@ -93,7 +94,7 @@ class _CustomSnoozeSheetState extends State<CustomSnoozeSheet> {
                 ),
               ),
               const SizedBox(height: 20),
-              
+
               // Title
               Row(
                 children: [
@@ -104,7 +105,8 @@ class _CustomSnoozeSheetState extends State<CustomSnoozeSheet> {
                       color: PingTheme.primaryRed.withAlpha(30),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(Icons.snooze, color: PingTheme.primaryRed, size: 22),
+                    child: Icon(Icons.snooze,
+                        color: PingTheme.primaryRed, size: 22),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -134,7 +136,7 @@ class _CustomSnoozeSheetState extends State<CustomSnoozeSheet> {
                 ],
               ),
               const SizedBox(height: 24),
-              
+
               // Quick options
               Text(
                 'QUICK OPTIONS',
@@ -150,27 +152,32 @@ class _CustomSnoozeSheetState extends State<CustomSnoozeSheet> {
                 spacing: 10,
                 runSpacing: 10,
                 children: _quickOptions.map((minutes) {
-                  final isSelected = _selectedDuration == minutes && !_showCustomInput;
+                  final isSelected =
+                      _selectedDuration == minutes && !_showCustomInput;
                   return GestureDetector(
                     onTap: () => _selectDuration(minutes),
                     child: AnimatedContainer(
                       duration: 150.ms,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
                       decoration: BoxDecoration(
-                        color: isSelected ? PingTheme.primaryRed : PingTheme.bgLight,
+                        color: isSelected ? PingTheme.primaryRed : Colors.white,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: isSelected 
-                              ? PingTheme.primaryRed 
-                              : PingTheme.textSecondary.withAlpha(50),
+                          color: isSelected
+                              ? PingTheme.primaryRed
+                              : PingTheme.textSecondary.withAlpha(100),
+                          width: isSelected ? 2 : 1,
                         ),
                       ),
                       child: Text(
                         CustomSnoozePicker.formatDuration(minutes),
                         style: TextStyle(
                           fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: isSelected ? Colors.white : PingTheme.textPrimary,
+                          fontWeight:
+                              isSelected ? FontWeight.w600 : FontWeight.w500,
+                          color:
+                              isSelected ? Colors.white : PingTheme.textPrimary,
                         ),
                       ),
                     ),
@@ -178,18 +185,22 @@ class _CustomSnoozeSheetState extends State<CustomSnoozeSheet> {
                 }).toList(),
               ),
               const SizedBox(height: 20),
-              
+
               // Custom input
               GestureDetector(
-                onTap: () => setState(() => _showCustomInput = !_showCustomInput),
+                onTap: () =>
+                    setState(() => _showCustomInput = !_showCustomInput),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: _showCustomInput ? PingTheme.primaryRed.withAlpha(20) : PingTheme.bgLight,
+                    color: _showCustomInput
+                        ? PingTheme.primaryRed.withAlpha(20)
+                        : PingTheme.bgLight,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: _showCustomInput 
-                          ? PingTheme.primaryRed 
+                      color: _showCustomInput
+                          ? PingTheme.primaryRed
                           : PingTheme.textSecondary.withAlpha(50),
                     ),
                   ),
@@ -197,7 +208,9 @@ class _CustomSnoozeSheetState extends State<CustomSnoozeSheet> {
                     children: [
                       Icon(
                         Icons.edit_outlined,
-                        color: _showCustomInput ? PingTheme.primaryRed : PingTheme.textSecondary,
+                        color: _showCustomInput
+                            ? PingTheme.primaryRed
+                            : PingTheme.textSecondary,
                         size: 20,
                       ),
                       const SizedBox(width: 12),
@@ -205,19 +218,23 @@ class _CustomSnoozeSheetState extends State<CustomSnoozeSheet> {
                         'Custom duration (e.g., 22 minutes)',
                         style: TextStyle(
                           fontSize: 14,
-                          color: _showCustomInput ? PingTheme.primaryRed : PingTheme.textSecondary,
+                          color: _showCustomInput
+                              ? PingTheme.primaryRed
+                              : PingTheme.textSecondary,
                         ),
                       ),
                       const Spacer(),
                       Icon(
-                        _showCustomInput ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                        _showCustomInput
+                            ? Icons.keyboard_arrow_up
+                            : Icons.keyboard_arrow_down,
                         color: PingTheme.textSecondary,
                       ),
                     ],
                   ),
                 ),
               ),
-              
+
               // Custom input field
               if (_showCustomInput) ...[
                 const SizedBox(height: 12),
@@ -235,7 +252,8 @@ class _CustomSnoozeSheetState extends State<CustomSnoozeSheet> {
                     textAlign: TextAlign.center,
                     decoration: InputDecoration(
                       hintText: '22',
-                      hintStyle: TextStyle(color: PingTheme.textSecondary.withAlpha(100)),
+                      hintStyle: TextStyle(
+                          color: PingTheme.textSecondary.withAlpha(100)),
                       suffixText: 'minutes',
                       suffixStyle: TextStyle(
                         fontSize: 16,
@@ -252,11 +270,14 @@ class _CustomSnoozeSheetState extends State<CustomSnoozeSheet> {
                     },
                     onSubmitted: (_) => _confirmSnooze(),
                   ),
-                ).animate().fadeIn(duration: 150.ms).slideY(begin: -0.1, end: 0),
+                )
+                    .animate()
+                    .fadeIn(duration: 150.ms)
+                    .slideY(begin: -0.1, end: 0),
               ],
-              
+
               const SizedBox(height: 24),
-              
+
               // Confirm button
               SizedBox(
                 width: double.infinity,
