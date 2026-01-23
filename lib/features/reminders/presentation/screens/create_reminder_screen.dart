@@ -97,12 +97,10 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
   Widget _buildSectionLabel(String label) {
     return Text(
       label,
-      style: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        color: PingTheme.textSecondary,
-        letterSpacing: 1,
-      ),
+      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            fontWeight: FontWeight.w500,
+            letterSpacing: 1,
+          ),
     );
   }
 
@@ -115,15 +113,16 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
       child: TextField(
         controller: _titleController,
         maxLines: 4,
-        style: TextStyle(
-          fontSize: 16,
-          color: PingTheme.textPrimary,
-        ),
+        style: Theme.of(context).textTheme.bodyLarge,
         decoration: InputDecoration(
           hintText: 'Remind me to water the monstera...',
-          hintStyle: TextStyle(
-            color: PingTheme.textSecondary.withAlpha(150),
-          ),
+          hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.color
+                    ?.withAlpha(150),
+              ),
           filled: false,
           border: InputBorder.none,
           contentPadding: const EdgeInsets.all(20),
@@ -164,11 +163,10 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
             ),
             child: Text(
               freq,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: isSelected ? Colors.white : PingTheme.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: isSelected ? Colors.white : null,
+                  ),
             ),
           ),
         );
