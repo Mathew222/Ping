@@ -158,7 +158,59 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
               (context, index) => Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
-                child: ReminderCard(reminder: evening[index], index: index),
+                child: Dismissible(
+                  key: Key(evening[index].id),
+                  direction: DismissDirection.horizontal,
+                  background: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    decoration: BoxDecoration(
+                      color: PingTheme.primaryRed,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.only(left: 20),
+                    child: const Icon(Icons.delete, color: Colors.white),
+                  ),
+                  secondaryBackground: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    decoration: BoxDecoration(
+                      color: PingTheme.primaryRed,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 20),
+                    child: const Icon(Icons.delete, color: Colors.white),
+                  ),
+                  confirmDismiss: (direction) async {
+                    return await showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Delete Reminder'),
+                          content: Text('Delete "${evening[index].title}"?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(false),
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(true),
+                              child: Text('Delete',
+                                  style:
+                                      TextStyle(color: PingTheme.primaryRed)),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  onDismissed: (direction) {
+                    ref
+                        .read(reminderActionsProvider.notifier)
+                        .delete(evening[index].id);
+                  },
+                  child: ReminderCard(reminder: evening[index], index: index),
+                ),
               ),
               childCount: evening.length,
             ),
@@ -175,7 +227,59 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
               (context, index) => Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
-                child: ReminderCard(reminder: afternoon[index], index: index),
+                child: Dismissible(
+                  key: Key(afternoon[index].id),
+                  direction: DismissDirection.horizontal,
+                  background: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    decoration: BoxDecoration(
+                      color: PingTheme.primaryRed,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.only(left: 20),
+                    child: const Icon(Icons.delete, color: Colors.white),
+                  ),
+                  secondaryBackground: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    decoration: BoxDecoration(
+                      color: PingTheme.primaryRed,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 20),
+                    child: const Icon(Icons.delete, color: Colors.white),
+                  ),
+                  confirmDismiss: (direction) async {
+                    return await showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Delete Reminder'),
+                          content: Text('Delete "${afternoon[index].title}"?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(false),
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(true),
+                              child: Text('Delete',
+                                  style:
+                                      TextStyle(color: PingTheme.primaryRed)),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  onDismissed: (direction) {
+                    ref
+                        .read(reminderActionsProvider.notifier)
+                        .delete(afternoon[index].id);
+                  },
+                  child: ReminderCard(reminder: afternoon[index], index: index),
+                ),
               ),
               childCount: afternoon.length,
             ),
