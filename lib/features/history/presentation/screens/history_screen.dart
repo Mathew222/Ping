@@ -111,7 +111,10 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
 
   Widget _buildTabBar() {
     return Container(
-      decoration: PingTheme.neumorphicCard,
+      decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
       padding: const EdgeInsets.all(6),
       child: Row(
         children: _tabs.map((tab) {
@@ -198,7 +201,10 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
 
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: PingTheme.neumorphicCard,
+      decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
       child: Row(
         children: [
           Container(
@@ -265,7 +271,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         width: 44,
         height: 44,
         decoration: BoxDecoration(
-          color: PingTheme.cardWhite,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(

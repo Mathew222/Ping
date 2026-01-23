@@ -72,7 +72,10 @@ class ProfileScreen extends ConsumerWidget {
               // Account info card
               Container(
                 padding: const EdgeInsets.all(20),
-                decoration: PingTheme.neumorphicCard,
+                decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

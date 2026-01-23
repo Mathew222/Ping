@@ -131,7 +131,10 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
 
   Widget _buildTaskInput() {
     return Container(
-      decoration: PingTheme.neumorphicCard,
+      decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
       child: TextField(
         controller: _titleController,
         maxLines: 4,
@@ -201,7 +204,10 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
       onTap: _pickTime,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        decoration: PingTheme.neumorphicCard,
+        decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
         child: Row(
           children: [
             Container(
@@ -249,7 +255,10 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
       onTap: _pickLocation,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        decoration: PingTheme.neumorphicCard,
+        decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
         child: Row(
           children: [
             Icon(
@@ -312,7 +321,7 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         decoration: BoxDecoration(
-          color: PingTheme.cardWhite,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: PingTheme.textSecondary.withAlpha(50),
@@ -460,7 +469,7 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: PingTheme.cardWhite,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
@@ -613,7 +622,7 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         decoration: BoxDecoration(
-          color: PingTheme.cardWhite,
+          color: Theme.of(context).cardColor,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: RecurrenceEditor(

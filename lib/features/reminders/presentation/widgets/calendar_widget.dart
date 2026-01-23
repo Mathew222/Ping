@@ -80,7 +80,10 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
 
   Widget _buildCalendar(Map<String, int> reminderCounts) {
     return Container(
-      decoration: PingTheme.neumorphicCard,
+      decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
       padding: const EdgeInsets.all(16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -98,7 +101,10 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
 
   Widget _buildCalendarSkeleton() {
     return Container(
-      decoration: PingTheme.neumorphicCard,
+      decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
       padding: const EdgeInsets.all(16),
       height: widget.isExpanded ? 380 : 120,
       child: const Center(
@@ -158,7 +164,7 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
         width: 32,
         height: 32,
         decoration: BoxDecoration(
-          color: PingTheme.cardWhite,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(8),
           boxShadow: [
             BoxShadow(

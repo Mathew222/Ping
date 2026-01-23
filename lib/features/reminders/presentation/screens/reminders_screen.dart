@@ -329,7 +329,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: PingTheme.cardWhite,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -365,7 +365,10 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
   Widget _buildProgressCard(int percent, int remaining) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: PingTheme.neumorphicCard,
+      decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
       child: Row(
         children: [
           Expanded(
@@ -455,7 +458,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
         width: 44,
         height: 44,
         decoration: BoxDecoration(
-          color: PingTheme.cardWhite,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(

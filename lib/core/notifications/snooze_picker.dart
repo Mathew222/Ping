@@ -72,7 +72,7 @@ class _CustomSnoozeSheetState extends State<CustomSnoozeSheet> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: PingTheme.cardWhite,
+        color: Theme.of(context).cardColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SafeArea(
@@ -239,7 +239,10 @@ class _CustomSnoozeSheetState extends State<CustomSnoozeSheet> {
               if (_showCustomInput) ...[
                 const SizedBox(height: 12),
                 Container(
-                  decoration: PingTheme.neumorphicCard,
+                  decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
                   child: TextField(
                     controller: _customController,
                     keyboardType: TextInputType.number,

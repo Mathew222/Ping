@@ -394,7 +394,10 @@ class ExpandedReminderCard extends StatelessWidget {
         : (reminder.snoozedUntil != null ? 'SNOOZED' : 'SKIPPED');
 
     return Container(
-      decoration: PingTheme.neumorphicCard,
+      decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
