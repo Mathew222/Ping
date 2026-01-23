@@ -147,6 +147,7 @@ class NotificationService {
   }
 
   NotificationDetails _getNotificationDetails(Reminder reminder) {
+    // Use the reminder's last snooze duration, or default to 10 minutes
     final snoozeDuration = reminder.lastSnoozeDuration ?? _lastSnoozeDuration;
 
     // Android notification with action buttons
@@ -154,26 +155,28 @@ class NotificationService {
       'ping_reminders',
       'Ping Reminders',
       channelDescription: 'Reminder notifications from Ping',
-      importance: Importance.high,
-      priority: Priority.high,
+      importance: Importance.max, // Changed to max for better visibility
+      priority: Priority.max, // Changed to max
       playSound: true,
       enableVibration: true,
       category: AndroidNotificationCategory.reminder,
+      // Remove styleInformation to use default style which shows actions better
+      fullScreenIntent: true, // Show as heads-up notification
       actions: [
         const AndroidNotificationAction(
           'complete',
           'Done ✓',
-          showsUserInterface: false,
+          showsUserInterface: true,
         ),
         AndroidNotificationAction(
           'snooze',
           'Snooze $snoozeDuration min',
-          showsUserInterface: false,
+          showsUserInterface: true,
         ),
         const AndroidNotificationAction(
           'snooze_custom',
           'Custom...',
-          showsUserInterface: true, // Opens app for custom snooze
+          showsUserInterface: true,
         ),
       ],
     );
