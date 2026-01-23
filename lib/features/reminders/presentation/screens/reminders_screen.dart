@@ -55,12 +55,14 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
     }).toList();
 
     // Group reminders by time of day and sort each group
-    // Sort: active reminders first (by time), then completed reminders (by time)
+    // Sort: active reminders first (newest to oldest), then completed reminders (newest to oldest)
     List<Reminder> sortReminders(List<Reminder> reminders) {
       final active = reminders.where((r) => !r.isCompleted).toList()
-        ..sort((a, b) => a.triggerAt.compareTo(b.triggerAt));
+        ..sort((a, b) =>
+            b.triggerAt.compareTo(a.triggerAt)); // Descending (newest first)
       final completed = reminders.where((r) => r.isCompleted).toList()
-        ..sort((a, b) => a.triggerAt.compareTo(b.triggerAt));
+        ..sort((a, b) =>
+            b.triggerAt.compareTo(a.triggerAt)); // Descending (newest first)
       return [...active, ...completed];
     }
 
