@@ -54,14 +54,23 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
           reminderDate.day == _selectedDate.day;
     }).toList();
 
-    // Group reminders by time of day
-    final morning =
-        filteredReminders.where((r) => r.triggerAt.hour < 12).toList();
-    final afternoon = filteredReminders
+    // Group reminders by time of day and sort each group
+    // Sort: active reminders first (by time), then completed reminders (by time)
+    List<Reminder> sortReminders(List<Reminder> reminders) {
+      final active = reminders.where((r) => !r.isCompleted).toList()
+        ..sort((a, b) => a.triggerAt.compareTo(b.triggerAt));
+      final completed = reminders.where((r) => r.isCompleted).toList()
+        ..sort((a, b) => a.triggerAt.compareTo(b.triggerAt));
+      return [...active, ...completed];
+    }
+
+    final morning = sortReminders(
+        filteredReminders.where((r) => r.triggerAt.hour < 12).toList());
+    final afternoon = sortReminders(filteredReminders
         .where((r) => r.triggerAt.hour >= 12 && r.triggerAt.hour < 17)
-        .toList();
-    final evening =
-        filteredReminders.where((r) => r.triggerAt.hour >= 17).toList();
+        .toList());
+    final evening = sortReminders(
+        filteredReminders.where((r) => r.triggerAt.hour >= 17).toList());
 
     final completedToday = filteredReminders.where((r) => r.isCompleted).length;
     final totalToday = filteredReminders.length;
