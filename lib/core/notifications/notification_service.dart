@@ -128,6 +128,11 @@ class NotificationService {
 
     debugPrint('NotificationService: Showing "${reminder.title}" immediately');
 
+    // SAFETY: Cancel any existing notification first to prevent duplicates
+    await cancelReminder(reminder.id);
+    debugPrint(
+        'NotificationService: Cancelled any existing notification for ${reminder.id}');
+
     await _plugin.show(
       reminder.id.hashCode,
       reminder.title,
