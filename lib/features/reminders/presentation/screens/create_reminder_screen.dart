@@ -165,7 +165,9 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
               freq,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w500,
-                    color: isSelected ? Colors.white : null,
+                    color: isSelected
+                        ? Colors.white
+                        : Theme.of(context).textTheme.bodyLarge?.color,
                   ),
             ),
           ),
