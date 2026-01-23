@@ -244,19 +244,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   children: [
                     Text(
                       title,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                        color: titleColor ?? PingTheme.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w500,
+                            color: titleColor,
+                          ),
                     ),
                     if (subtitle != null)
                       Text(
                         subtitle,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: PingTheme.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                   ],
                 ),
@@ -294,11 +290,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           Expanded(
             child: Text(
               title,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                color: PingTheme.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
           ),
           Switch(
