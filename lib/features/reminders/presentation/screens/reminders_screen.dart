@@ -146,6 +146,23 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
           ),
         ],
 
+        // Evening section (moved before Afternoon so new evening reminders appear higher)
+        if (evening.isNotEmpty) ...[
+          SliverToBoxAdapter(
+            child: _buildSectionHeader('Evening'),
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+                child: ReminderCard(reminder: evening[index], index: index),
+              ),
+              childCount: evening.length,
+            ),
+          ),
+        ],
+
         // Afternoon section
         if (afternoon.isNotEmpty) ...[
           SliverToBoxAdapter(
@@ -159,23 +176,6 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                 child: ReminderCard(reminder: afternoon[index], index: index),
               ),
               childCount: afternoon.length,
-            ),
-          ),
-        ],
-
-        // Evening section
-        if (evening.isNotEmpty) ...[
-          SliverToBoxAdapter(
-            child: _buildSectionHeader('Evening'),
-          ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) => Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
-                child: ReminderCard(reminder: evening[index], index: index),
-              ),
-              childCount: evening.length,
             ),
           ),
         ],
