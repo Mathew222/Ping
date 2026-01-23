@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ping/app/router.dart';
 import 'package:ping/app/theme/ping_theme.dart';
+import 'package:ping/app/theme/theme_provider.dart';
 import 'package:ping/features/reminders/presentation/providers/reminders_provider.dart';
 
 /// Main Ping application
@@ -11,6 +12,7 @@ class PingApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     // Keep the reminder actions provider alive to handle notification actions
     ref.watch(reminderActionsProvider);
@@ -20,7 +22,7 @@ class PingApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: PingTheme.lightTheme,
       darkTheme: PingTheme.darkTheme,
-      themeMode: ThemeMode.dark, // Temporarily forced to dark for testing
+      themeMode: themeMode,
       routerConfig: router,
     );
   }

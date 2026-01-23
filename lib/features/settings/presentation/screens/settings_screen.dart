@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ping/app/theme/ping_theme.dart';
+import 'package:ping/app/theme/theme_provider.dart';
 import 'package:ping/features/auth/presentation/providers/auth_provider.dart';
 
 /// Settings screen with neumorphic design
@@ -17,12 +18,14 @@ class SettingsScreen extends ConsumerStatefulWidget {
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _soundEnabled = true;
   bool _vibrationEnabled = true;
-  String _theme = 'System';
   int _defaultSnooze = 10;
 
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(currentUserProvider);
+    final themeMode = ref.watch(themeModeProvider);
+    final themeModeNotifier = ref.read(themeModeProvider.notifier);
+    final themeString = themeModeNotifier.themeModeString;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -91,7 +94,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   _buildSettingsTile(
                     icon: Icons.dark_mode_outlined,
                     title: 'Theme',
-                    subtitle: _theme,
+                    subtitle: themeString,
                     onTap: () => _showThemePicker(),
                   ),
                 ],
