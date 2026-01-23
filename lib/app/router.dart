@@ -167,11 +167,11 @@ class _BottomNavBarWithFABState extends State<_BottomNavBarWithFAB>
       height: 80,
       margin: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: PingTheme.bgLight,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: PingTheme.shadowDark.withAlpha(60),
+            color: Colors.black.withAlpha(60),
             offset: const Offset(0, 4),
             blurRadius: 20,
           ),
