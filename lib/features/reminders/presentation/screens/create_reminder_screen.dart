@@ -26,7 +26,7 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
   RecurrenceRule? _customRecurrenceRule; // Store custom recurrence rule
   bool _isLoading = false;
 
-  final _frequencies = ['Once', 'Daily', 'Weekly', 'Custom'];
+  final _frequencies = ['Once', 'Daily', 'Weekly', 'Monthly', 'Yearly'];
 
   @override
   void dispose() {
@@ -148,11 +148,7 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
         return GestureDetector(
           onTap: () {
             HapticFeedback.selectionClick();
-            if (freq == 'Custom') {
-              _handleCustomFrequency();
-            } else {
-              setState(() => _selectedFrequency = freq);
-            }
+            setState(() => _selectedFrequency = freq);
           },
           child: AnimatedContainer(
             duration: 200.ms,
@@ -539,73 +535,12 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
         return RecurrenceType.daily;
       case 'Weekly':
         return RecurrenceType.weekly;
-      case 'Custom':
-        return RecurrenceType.custom;
+      case 'Monthly':
+        return RecurrenceType.monthly;
+      case 'Yearly':
+        return RecurrenceType.yearly;
       default:
         return RecurrenceType.daily;
-    }
-  }
-
-  Future<void> _handleCustomFrequency() async {
-    final now = DateTime.now();
-    final triggerDate = DateTime(
-      now.year,
-      now.month,
-      now.day,
-      _selectedTime.hour,
-      _selectedTime.minute,
-    );
-
-    final rule = await showModalBottomSheet<RecurrenceRule>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: RecurrenceEditor(
-          triggerDate: triggerDate,
-        ),
-      ),
-    );
-
-    if (rule != null) {
-      setState(() {
-        _selectedFrequency = 'Custom';
-        _customRecurrenceRule = rule; // Store the custom rule
-      });
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Custom recurrence: ${_formatRecurrence(rule)}'),
-            backgroundColor: PingTheme.primaryRed,
-          ),
-        );
-      }
-    }
-  }
-
-  String _formatRecurrence(RecurrenceRule rule) {
-    switch (rule.type) {
-      case RecurrenceType.daily:
-        return rule.interval == 1 ? 'Daily' : 'Every ${rule.interval} days';
-      case RecurrenceType.weekly:
-        if (rule.daysOfWeek != null && rule.daysOfWeek!.isNotEmpty) {
-          final days = rule.daysOfWeek!
-              .map((d) => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d])
-              .join(', ');
-          return 'Weekly on $days';
-        }
-        return rule.interval == 1 ? 'Weekly' : 'Every ${rule.interval} weeks';
-      case RecurrenceType.monthly:
-        return rule.interval == 1 ? 'Monthly' : 'Every ${rule.interval} months';
-      case RecurrenceType.custom:
-        return 'Every ${rule.customMinutes} minutes';
-      default:
-        return 'Custom';
     }
   }
 }
