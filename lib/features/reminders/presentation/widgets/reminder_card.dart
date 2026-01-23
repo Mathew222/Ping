@@ -229,6 +229,56 @@ class _ReminderCardState extends ConsumerState<ReminderCard> {
       );
     }
 
+    // For recurring reminders, show both Done and Stop buttons
+    if (widget.reminder.isRecurring) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Stop recurrence button
+          GestureDetector(
+            onTap: () => _stopRecurrence(ref),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: PingTheme.primaryRed.withAlpha(30),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: PingTheme.primaryRed,
+                  width: 1,
+                ),
+              ),
+              child: Text(
+                'STOP',
+                style: TextStyle(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w600,
+                  color: PingTheme.primaryRed,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          // Done button
+          GestureDetector(
+            onTap: () => _toggleComplete(ref),
+            child: Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: PingTheme.textSecondary.withAlpha(40),
+                border: Border.all(
+                  color: PingTheme.textSecondary.withAlpha(100),
+                  width: 2,
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
     // Show checkbox for pending items
     return GestureDetector(
       onTap: () => _toggleComplete(ref),
