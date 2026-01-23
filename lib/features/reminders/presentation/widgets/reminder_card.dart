@@ -41,9 +41,10 @@ class _ReminderCardState extends ConsumerState<ReminderCard> {
         duration: const Duration(milliseconds: 150),
         transform: Matrix4.identity()..scale(_isPressed ? 0.98 : 1.0),
         padding: const EdgeInsets.all(16),
-        decoration: _isPressed
-            ? PingTheme.neumorphicCardPressed
-            : PingTheme.neumorphicCard,
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(20),
+        ),
         child: Row(
           children: [
             // Icon circle with priority pulse
@@ -395,9 +396,9 @@ class ExpandedReminderCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(20),
-          ),
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
