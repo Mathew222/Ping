@@ -98,6 +98,11 @@ class NotificationService {
     debugPrint(
         'NotificationService: Scheduling "${reminder.title}" for ${reminder.triggerAt}');
 
+    // SAFETY: Always cancel existing notification first to prevent duplicates
+    await cancelReminder(reminder.id);
+    debugPrint(
+        'NotificationService: Cancelled any existing notification for ${reminder.id}');
+
     final scheduledTime = tz.TZDateTime.from(reminder.triggerAt, tz.local);
 
     // If time is in the past, show immediately
