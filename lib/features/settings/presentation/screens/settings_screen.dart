@@ -23,7 +23,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(currentUserProvider);
-    final themeMode = ref.watch(themeModeProvider);
     final themeModeNotifier = ref.read(themeModeProvider.notifier);
     final themeString = themeModeNotifier.themeModeString;
 
@@ -375,10 +374,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   void _showThemePicker() {
-    final themes = ['System', 'Light', 'Dark'];
+    final themeModeNotifier = ref.read(themeModeProvider.notifier);
+    final currentThemeString = themeModeNotifier.themeModeString;
+
+    final themes = [
+      {
+        'name': 'System',
+        'mode': ThemeMode.system,
+        'icon': Icons.brightness_auto
+      },
+      {'name': 'Light', 'mode': ThemeMode.light, 'icon': Icons.light_mode},
+      {'name': 'Dark', 'mode': ThemeMode.dark, 'icon': Icons.dark_mode},
+    ];
+
     showModalBottomSheet(
       context: context,
-      backgroundColor: PingTheme.cardWhite,
+      backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -394,19 +405,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ),
             ...themes.map((t) => ListTile(
-                  leading: Icon(
-                    t == 'Dark'
-                        ? Icons.dark_mode
-                        : (t == 'Light'
-                            ? Icons.light_mode
-                            : Icons.brightness_auto),
-                  ),
-                  title: Text(t),
-                  trailing: _theme == t
+                  leading: Icon(t['icon'] as IconData),
+                  title: Text(t['name'] as String),
+                  trailing: currentThemeString == t['name']
                       ? Icon(Icons.check, color: PingTheme.primaryRed)
                       : null,
                   onTap: () {
-                    setState(() => _theme = t);
+                    themeModeNotifier.setThemeMode(t['mode'] as ThemeMode);
                     Navigator.pop(context);
                   },
                 )),
