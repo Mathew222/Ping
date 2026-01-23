@@ -394,11 +394,9 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                   ),
                   child: Text(
                     'Keep going!',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: PingTheme.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
                   ),
                 ),
               ],

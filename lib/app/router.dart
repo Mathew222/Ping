@@ -303,7 +303,9 @@ class _NavButton extends StatelessWidget {
           child: Icon(
             isSelected ? selectedIcon : icon,
             key: ValueKey(isSelected),
-            color: isSelected ? PingTheme.textPrimary : PingTheme.textSecondary,
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).textTheme.bodyLarge?.color,
             size: 24,
           ),
         ),

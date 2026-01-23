@@ -58,22 +58,17 @@ class _ReminderCardState extends ConsumerState<ReminderCard> {
                 children: [
                   Text(
                     widget.reminder.title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: PingTheme.textPrimary,
-                      decoration: widget.reminder.isCompleted
-                          ? TextDecoration.lineThrough
-                          : null,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          decoration: widget.reminder.isCompleted
+                              ? TextDecoration.lineThrough
+                              : null,
+                        ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     _formatTime(widget.reminder.triggerAt),
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: PingTheme.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ],
               ),
