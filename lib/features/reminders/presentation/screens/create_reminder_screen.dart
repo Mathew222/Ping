@@ -20,6 +20,7 @@ class CreateReminderScreen extends ConsumerStatefulWidget {
 class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
   final _titleController = TextEditingController();
   String _selectedFrequency = 'Once';
+  DateTime _selectedDate = DateTime.now(); // Selected date for reminder
   TimeOfDay _selectedTime = TimeOfDay.now();
   int _defaultSnoozeDuration = 10; // Default snooze in minutes
   RecurrenceRule? _customRecurrenceRule; // Store custom recurrence rule
@@ -68,6 +69,13 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
             _buildSectionLabel('FREQUENCY'),
             const SizedBox(height: 12),
             _buildFrequencyChips(),
+
+            const SizedBox(height: 32),
+
+            // Date section
+            _buildSectionLabel('DATE'),
+            const SizedBox(height: 12),
+            _buildDatePicker(),
 
             const SizedBox(height: 32),
 
@@ -223,6 +231,52 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
         ),
       ),
     ).animate().fadeIn(duration: 200.ms, delay: 200.ms);
+  }
+
+  Widget _buildDatePicker() {
+    return GestureDetector(
+      onTap: _pickDate,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: PingTheme.primaryRed.withAlpha(30),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                Icons.calendar_today_rounded,
+                color: PingTheme.primaryRed,
+                size: 18,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _formatDate(_selectedDate),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+                Text(
+                  _getRelativeDateText(_selectedDate),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ).animate().fadeIn(duration: 200.ms, delay: 150.ms);
   }
 
   Widget _buildSubmitButton() {
@@ -427,6 +481,49 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
     }
   }
 
+  Future<void> _pickDate() async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
+    );
+    if (date != null) {
+      setState(() => _selectedDate = date);
+    }
+  }
+
+  String _formatDate(DateTime date) {
+    final months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
+    return '${months[date.month - 1]} ${date.day}, ${date.year}';
+  }
+
+  String _getRelativeDateText(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final selectedDay = DateTime(date.year, date.month, date.day);
+    final difference = selectedDay.difference(today).inDays;
+
+    if (difference == 0) return 'Today';
+    if (difference == 1) return 'Tomorrow';
+    if (difference == -1) return 'Yesterday';
+    if (difference > 1 && difference < 7) return 'In $difference days';
+    return '';
+  }
+
   String _formatSnoozeDuration(int minutes) {
     if (minutes < 60) {
       return '$minutes min';
@@ -451,11 +548,10 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
     HapticFeedback.mediumImpact();
 
     try {
-      final now = DateTime.now();
       final triggerAt = DateTime(
-        now.year,
-        now.month,
-        now.day,
+        _selectedDate.year,
+        _selectedDate.month,
+        _selectedDate.day,
         _selectedTime.hour,
         _selectedTime.minute,
       );
@@ -474,13 +570,9 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
         );
       }
 
-      final actualTriggerTime = triggerAt.isBefore(now)
-          ? triggerAt.add(const Duration(days: 1))
-          : triggerAt;
-
       final reminder = Reminder(
         title: _titleController.text,
-        triggerAt: actualTriggerTime,
+        triggerAt: triggerAt,
         recurrenceRule: rule,
         priority: ReminderPriority.normal,
         lastSnoozeDuration: _defaultSnoozeDuration,
@@ -497,7 +589,7 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-                'Reminder set for ${_formatTime(TimeOfDay.fromDateTime(actualTriggerTime))}'),
+                'Reminder set for ${_formatDate(triggerAt)} at ${_formatTime(TimeOfDay.fromDateTime(triggerAt))}'),
             backgroundColor: PingTheme.primaryRed,
           ),
         );

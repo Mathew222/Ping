@@ -39,7 +39,9 @@ class _ReminderCardState extends ConsumerState<ReminderCard> {
       onLongPress: () => _showSnoozeSheet(context, ref),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
-        transform: Matrix4.identity()..scale(_isPressed ? 0.98 : 1.0),
+        transform: _isPressed
+            ? Matrix4.diagonal3Values(0.98, 0.98, 1.0)
+            : Matrix4.identity(),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
@@ -258,7 +260,7 @@ class _ReminderCardState extends ConsumerState<ReminderCard> {
     if (widget.reminder.isRecurring) {
       debugPrint('ReminderCard: Showing recurring reminder dialog');
       final result = await showDialog<String>(
-        context: ref.context,
+        context: context,
         builder: (context) => AlertDialog(
           title: Text(
             'Recurring Reminder',

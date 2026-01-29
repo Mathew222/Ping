@@ -81,9 +81,9 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
   Widget _buildCalendar(Map<String, int> reminderCounts) {
     return Container(
       decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(20),
-          ),
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
       padding: const EdgeInsets.all(16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -102,9 +102,9 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
   Widget _buildCalendarSkeleton() {
     return Container(
       decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(20),
-          ),
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
       padding: const EdgeInsets.all(16),
       height: widget.isExpanded ? 380 : 120,
       child: const Center(
@@ -135,12 +135,9 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
         // Month and Year
         Expanded(
           child: Text(
+            key: ValueKey('${_displayMonth.year}-${_displayMonth.month}'),
             '${monthNames[_displayMonth.month - 1]} ${_displayMonth.year}',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: PingTheme.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
         // Navigation buttons
@@ -189,11 +186,9 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
           child: Center(
             child: Text(
               day,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: PingTheme.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
           ),
         );
@@ -292,8 +287,12 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
                 color: isSelected
                     ? Colors.white
                     : isPast
-                        ? PingTheme.textSecondary.withAlpha(100)
-                        : PingTheme.textPrimary,
+                        ? Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.color
+                            ?.withAlpha(100)
+                        : Theme.of(context).textTheme.bodyLarge?.color,
               ),
             ),
             // Reminder count badge

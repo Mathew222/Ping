@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ping/app/theme/ping_theme.dart';
 import 'package:ping/features/reminders/presentation/providers/reminders_provider.dart';
 import 'package:ping/features/reminders/presentation/widgets/reminder_card.dart';
@@ -312,7 +313,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: PingTheme.textPrimary,
+                      color: Theme.of(context).textTheme.titleLarge?.color,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -320,7 +321,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                     'Select another date or create a new reminder',
                     style: TextStyle(
                       fontSize: 14,
-                      color: PingTheme.textSecondary,
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -386,36 +387,42 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                 ),
                 const SizedBox(width: 12),
                 // Animated profile avatar
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        PingTheme.primaryRed,
-                        PingTheme.textSecondary,
+                GestureDetector(
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    context.pushNamed('profile');
+                  },
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          PingTheme.primaryRed,
+                          PingTheme.textSecondary,
+                        ],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: PingTheme.primaryRed.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
                       ],
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: PingTheme.primaryRed.withOpacity(0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child:
-                      const Icon(Icons.person, color: Colors.white, size: 24),
-                )
-                    .animate(
-                        onPlay: (controller) =>
-                            controller.repeat(reverse: true))
-                    .shimmer(
-                        duration: 3000.ms,
-                        color: Colors.white.withOpacity(0.3)),
+                    child:
+                        const Icon(Icons.person, color: Colors.white, size: 24),
+                  )
+                      .animate(
+                          onPlay: (controller) =>
+                              controller.repeat(reverse: true))
+                      .shimmer(
+                          duration: 3000.ms,
+                          color: Colors.white.withOpacity(0.3)),
+                ),
               ],
             ),
           ],
@@ -581,21 +588,28 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
     final tomorrow = today.add(const Duration(days: 1));
     final nextWeek = today.add(const Duration(days: 7));
 
+    // Count only ACTIVE/INCOMPLETE reminders for today
     final todayCount = reminderList.where((r) {
       final date = r.triggerAt;
       return date.year == today.year &&
           date.month == today.month &&
-          date.day == today.day;
-    }).length;
-
-    final upcomingCount = reminderList.where((r) {
-      return r.triggerAt.isAfter(tomorrow) &&
-          r.triggerAt.isBefore(nextWeek) &&
+          date.day == today.day &&
+          !r.isCompleted &&
           r.status == ReminderStatus.active;
     }).length;
 
-    final totalActive =
-        reminderList.where((r) => r.status == ReminderStatus.active).length;
+    // Count only ACTIVE/INCOMPLETE reminders for upcoming (tomorrow to next week)
+    final upcomingCount = reminderList.where((r) {
+      return r.triggerAt.isAfter(tomorrow) &&
+          r.triggerAt.isBefore(nextWeek) &&
+          !r.isCompleted &&
+          r.status == ReminderStatus.active;
+    }).length;
+
+    // Count only ACTIVE/INCOMPLETE reminders total
+    final totalActive = reminderList
+        .where((r) => r.status == ReminderStatus.active && !r.isCompleted)
+        .length;
 
     return RemindersSummaryCard(
       totalReminders: totalActive,

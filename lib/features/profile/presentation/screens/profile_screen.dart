@@ -73,9 +73,9 @@ class ProfileScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(20),
-          ),
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -87,18 +87,21 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 16),
                     _buildInfoRow(
+                      context,
                       Icons.email_outlined,
                       'Email',
                       user?.email ?? 'N/A',
                     ),
                     const Divider(height: 24),
                     _buildInfoRow(
+                      context,
                       Icons.fingerprint,
                       'User ID',
                       user?.id.substring(0, 8) ?? 'N/A',
                     ),
                     const Divider(height: 24),
                     _buildInfoRow(
+                      context,
                       Icons.cloud_outlined,
                       'Sync Status',
                       'Connected',
@@ -137,11 +140,20 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value,
-      {Color? valueColor}) {
+  Widget _buildInfoRow(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value, {
+    Color? valueColor,
+  }) {
     return Row(
       children: [
-        Icon(icon, size: 20, color: PingTheme.textSecondary),
+        Icon(
+          icon,
+          size: 20,
+          color: Theme.of(context).textTheme.bodyMedium?.color,
+        ),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -151,7 +163,7 @@ class ProfileScreen extends ConsumerWidget {
                 label,
                 style: TextStyle(
                   fontSize: 12,
-                  color: PingTheme.textSecondary,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                 ),
               ),
               const SizedBox(height: 2),
@@ -160,7 +172,8 @@ class ProfileScreen extends ConsumerWidget {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: valueColor ?? PingTheme.textPrimary,
+                  color: valueColor ??
+                      Theme.of(context).textTheme.bodyLarge?.color,
                 ),
               ),
             ],

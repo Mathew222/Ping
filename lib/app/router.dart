@@ -171,7 +171,7 @@ class _BottomNavBarWithFABState extends State<_BottomNavBarWithFAB>
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(60),
+            color: Colors.black.withValues(alpha: 60 / 255),
             offset: const Offset(0, 4),
             blurRadius: 20,
           ),
@@ -218,7 +218,7 @@ class _BottomNavBarWithFABState extends State<_BottomNavBarWithFAB>
                   borderRadius: BorderRadius.circular(18),
                   boxShadow: [
                     BoxShadow(
-                      color: PingTheme.primaryRed.withAlpha(100),
+                      color: PingTheme.primaryRed.withValues(alpha: 100 / 255),
                       offset: const Offset(0, 4),
                       blurRadius: 12,
                     ),
@@ -231,7 +231,7 @@ class _BottomNavBarWithFABState extends State<_BottomNavBarWithFAB>
                 ),
               ).animate(onPlay: (controller) => controller.repeat()).shimmer(
                     duration: 2000.ms,
-                    color: Colors.white.withOpacity(0.3),
+                    color: Colors.white.withValues(alpha: 0.3),
                   ),
             ),
           ),
@@ -282,7 +282,7 @@ class _NavButton extends StatelessWidget {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: Colors.black.withAlpha(30),
+                    color: Colors.black.withValues(alpha: 30 / 255),
                     offset: const Offset(2, 2),
                     blurRadius: 6,
                   ),

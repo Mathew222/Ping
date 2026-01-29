@@ -94,7 +94,38 @@ CREATE POLICY "Users can delete own reminders"
 
 4. Click "Run" to execute
 
-## Step 5: Enable Google Sign-In (Optional)
+## Step 5: Enable Realtime (Required for Multi-Device Sync)
+
+> [!IMPORTANT]
+> This step is **required** for reminders to automatically sync between devices without restarting the app.
+
+1. In Supabase dashboard, go to **SQL Editor**
+2. Click "New query"
+3. Paste the contents of `realtime_setup.sql`:
+
+```sql
+-- Enable Realtime replication for the reminders table
+ALTER PUBLICATION supabase_realtime ADD TABLE reminders;
+```
+
+4. Click "Run" to execute
+5. You should see a success message
+6. To verify, run this query:
+
+```sql
+SELECT schemaname, tablename
+FROM pg_publication_tables
+WHERE pubname = 'supabase_realtime' AND tablename = 'reminders';
+```
+
+7. You should see one row showing `public | reminders`
+
+**What this does:**
+- Enables real-time broadcasting of INSERT, UPDATE, and DELETE events
+- Allows the app to automatically receive changes from other devices
+- No app restart needed when reminders are created/modified on another device
+
+## Step 6: Enable Google Sign-In (Optional)
 
 1. Go to **Authentication** → **Providers**
 2. Find "Google" and click to configure
@@ -102,7 +133,7 @@ CREATE POLICY "Users can delete own reminders"
 4. Add your OAuth credentials from Google Cloud Console
 5. Save
 
-## Step 6: Test the Setup
+## Step 7: Test the Setup
 
 1. Hot restart your app
 2. You should see "Supabase initialized successfully" in logs

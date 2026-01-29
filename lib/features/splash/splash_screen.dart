@@ -57,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen>
             colors: [
               PingTheme.primaryRed,
               PingTheme.primaryRed.withBlue(180),
-              PingTheme.textSecondary.withOpacity(0.8),
+              PingTheme.textSecondary.withValues(alpha: 0.8),
             ],
           ),
         ),
@@ -81,7 +81,7 @@ class _SplashScreenState extends State<SplashScreen>
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.white.withOpacity(0.5),
+                          color: Colors.white.withValues(alpha: 0.5),
                           blurRadius: 40,
                           spreadRadius: 20,
                         ),
@@ -114,7 +114,7 @@ class _SplashScreenState extends State<SplashScreen>
                       letterSpacing: 2,
                       shadows: [
                         Shadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: Colors.black.withValues(alpha: 0.2),
                           offset: const Offset(0, 2),
                           blurRadius: 4,
                         ),
@@ -139,7 +139,7 @@ class _SplashScreenState extends State<SplashScreen>
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
-                      color: Colors.white.withOpacity(0.95),
+                      color: Colors.white.withValues(alpha: 0.95),
                       letterSpacing: 0.5,
                     ),
                   )
@@ -198,7 +198,7 @@ class AnimatedParticle extends StatelessWidget {
             width: particle.size,
             height: particle.size,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.4),
+              color: Colors.white.withValues(alpha: 0.4),
               shape: BoxShape.circle,
             ),
           ),

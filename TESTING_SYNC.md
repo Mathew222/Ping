@@ -1,7 +1,7 @@
 # Testing Cross-Device Sync (iPhone + Android)
 
 ## 🎯 Goal
-Verify that reminders sync in real-time between your iPhone and Android device.
+Verify that reminders sync **automatically in real-time** between your iPhone and Android device.
 
 ## 📋 Prerequisites
 
@@ -38,7 +38,7 @@ flutter run -d <android-device-id>
 
 ✅ Both devices should now show the same reminders (if any exist)
 
-### Step 3: Test Sync from iPhone → Android
+### Step 3: Test Real-Time Sync from iPhone → Android
 
 **On iPhone:**
 1. Tap the `+` button
@@ -46,10 +46,10 @@ flutter run -d <android-device-id>
 3. Set time and save
 
 **On Android:**
-1. Pull down to refresh (swipe down on reminder list)
-2. **Expected**: "Test from iPhone" appears!
+1. **Watch the screen** - no action needed!
+2. **Expected**: "Test from iPhone" appears **automatically within 1-2 seconds**! ✨
 
-### Step 4: Test Sync from Android → iPhone
+### Step 4: Test Real-Time Sync from Android → iPhone
 
 **On Android:**
 1. Tap the `+` button
@@ -57,8 +57,8 @@ flutter run -d <android-device-id>
 3. Set time and save
 
 **On iPhone:**
-1. Pull down to refresh
-2. **Expected**: "Test from Android" appears!
+1. **Watch the screen** - no action needed!
+2. **Expected**: "Test from Android" appears **automatically within 1-2 seconds**! ✨
 
 ### Step 5: Test Delete Sync
 
@@ -66,8 +66,8 @@ flutter run -d <android-device-id>
 1. Delete "Test from Android"
 
 **On Android:**
-1. Pull down to refresh
-2. **Expected**: Reminder is gone!
+1. **Watch the screen**
+2. **Expected**: Reminder disappears **automatically**!
 
 ### Step 6: Test Edit Sync
 
@@ -77,33 +77,38 @@ flutter run -d <android-device-id>
 3. Save
 
 **On iPhone:**
-1. Pull down to refresh
-2. **Expected**: Title updated to "Edited on Android"!
+1. **Watch the screen**
+2. **Expected**: Title updates to "Edited on Android" **automatically**!
 
-## 🔄 Manual Refresh
+## 🔄 Real-Time Sync
 
-Since we're using manual refresh (not real-time streams), you need to:
-- **Pull down** on the reminder list to refresh
-- Or **navigate away and back** to the reminders screen
+**No manual refresh needed!** Changes sync automatically:
+- ✨ **Create** → Appears on other devices within 1-2 seconds
+- ✨ **Edit** → Updates on other devices automatically
+- ✨ **Delete** → Removes from other devices automatically
+- ✨ **Snooze/Complete** → Status syncs in real-time
 
 ## ✅ What Should Work
 
 | Action | Device A | Device B | Result |
 |--------|----------|----------|--------|
-| Create | iPhone | Android | ✅ Appears after refresh |
-| Edit | Android | iPhone | ✅ Updates after refresh |
-| Delete | iPhone | Android | ✅ Disappears after refresh |
-| Complete | Android | iPhone | ✅ Status syncs |
+| Create | iPhone | Android | ✅ Appears automatically (1-2s) |
+| Edit | Android | iPhone | ✅ Updates automatically (1-2s) |
+| Delete | iPhone | Android | ✅ Disappears automatically (1-2s) |
+| Complete | Android | iPhone | ✅ Status syncs automatically |
+| Snooze | iPhone | Android | ✅ Time updates automatically |
 
 ## 🐛 Troubleshooting
 
-### Reminders Not Syncing?
+### Reminders Not Syncing in Real-Time?
 
 1. **Check you're signed in** on both devices
 2. **Same account?** Verify email matches
-3. **Pull to refresh** - manual refresh required
-4. **Check Supabase dashboard** - verify data is there
-5. **Check logs** - look for "SupabaseRemindersRepository" messages
+3. **Internet connection?** Both devices need active connection
+4. **Wait 2-3 seconds** - real-time sync has slight delay
+5. **Check Supabase dashboard** - verify data is there
+6. **Check logs** - look for "SupabaseRemindersRepository" messages
+7. **Restart app** - if stream disconnected, restart to reconnect
 
 ### How to Check Supabase Dashboard
 
@@ -133,18 +138,20 @@ flutter run -d emulator-5554
 
 ## 🎉 Success Criteria
 
-✅ Create reminder on iPhone → Appears on Android  
-✅ Edit reminder on Android → Updates on iPhone  
-✅ Delete reminder on iPhone → Removed from Android  
+✅ Create reminder on iPhone → Appears on Android **automatically**  
+✅ Edit reminder on Android → Updates on iPhone **automatically**  
+✅ Delete reminder on iPhone → Removed from Android **automatically**  
 ✅ Same reminders visible on both devices  
 ✅ User can sign in with same account on both  
+✅ Sync happens within 1-2 seconds  
+✅ No manual refresh needed
 
 ## 💡 Pro Tips
 
 1. **Keep terminals open** - one for each device
-2. **Use pull-to-refresh** - swipe down on reminder list
+2. **Watch for automatic updates** - no need to refresh!
 3. **Check Supabase dashboard** - verify data is syncing
-4. **Test offline mode** - turn off WiFi, create reminder, turn on WiFi
+4. **Test offline mode** - turn off WiFi, create reminder, turn on WiFi (should sync when reconnected)
 5. **Sign out test** - sign out on one device, reminders should stay on other
 
 ## 🔍 Debugging
