@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ping/app/app.dart';
 import 'package:ping/core/notifications/notification_service.dart';
 import 'package:ping/core/config/supabase_config.dart';
+import 'package:ping/core/sounds/sound_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +23,12 @@ Future<void> main() async {
 
   // Initialize notification service
   await NotificationService.instance.initialize();
+
+  // Load and apply saved notification sound
+  final soundService = SoundService();
+  final savedSound = await soundService.getSelectedSound();
+  NotificationService.instance.setNotificationSound(savedSound);
+  debugPrint('Loaded notification sound: ${savedSound.displayName}');
 
   // TODO: Initialize Firebase
   // await Firebase.initializeApp();

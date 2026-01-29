@@ -4,6 +4,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:ping/features/reminders/domain/reminder.dart';
+import 'package:ping/core/sounds/sound_service.dart';
 
 /// NotificationService - Full implementation with Android/iOS notifications
 class NotificationService {
@@ -17,6 +18,14 @@ class NotificationService {
   int _lastSnoozeDuration = 10;
   int get lastSnoozeDuration => _lastSnoozeDuration;
   set lastSnoozeDuration(int value) => _lastSnoozeDuration = value;
+
+  // Current notification sound
+  NotificationSound _currentSound = NotificationSound.gentleChime;
+
+  /// Set the notification sound
+  void setNotificationSound(NotificationSound sound) {
+    _currentSound = sound;
+  }
 
   // Callback when user interacts with notification
   Function(String reminderId, String action, int? snoozeDuration)?
@@ -160,18 +169,19 @@ class NotificationService {
     // Use the reminder's last snooze duration, or default to 10 minutes
     final snoozeDuration = reminder.lastSnoozeDuration ?? _lastSnoozeDuration;
 
-    // Android notification with action buttons
+    // Android notification with action buttons and custom sound
     final androidDetails = AndroidNotificationDetails(
       'ping_reminders',
       'Ping Reminders',
       channelDescription: 'Reminder notifications from Ping',
-      importance: Importance.max, // Changed to max for better visibility
-      priority: Priority.max, // Changed to max
+      importance: Importance.max,
+      priority: Priority.max,
       playSound: true,
+      sound: RawResourceAndroidNotificationSound(
+          _currentSound.androidResourceName),
       enableVibration: true,
       category: AndroidNotificationCategory.reminder,
-      // Remove styleInformation to use default style which shows actions better
-      fullScreenIntent: true, // Show as heads-up notification
+      fullScreenIntent: true,
       actions: [
         const AndroidNotificationAction(
           'complete',
@@ -191,11 +201,12 @@ class NotificationService {
       ],
     );
 
-    // iOS notification
-    const iosDetails = DarwinNotificationDetails(
+    // iOS notification with custom sound
+    final iosDetails = DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
+      sound: _currentSound.iosFileName,
       categoryIdentifier: 'reminder_category',
     );
 

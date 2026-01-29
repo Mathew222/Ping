@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:ping/app/theme/ping_theme.dart';
 import 'package:ping/app/theme/theme_provider.dart';
 import 'package:ping/features/auth/presentation/providers/auth_provider.dart';
+import 'package:ping/core/sounds/sound_service.dart';
+import 'package:ping/core/notifications/notification_service.dart';
 
 /// Settings screen with neumorphic design
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -63,6 +65,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               child: _buildSection(
                 'Notifications',
                 [
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final selectedSound = ref.watch(soundSelectionProvider);
+                      return _buildSettingsTile(
+                        icon: Icons.music_note_outlined,
+                        title: 'Notification Sound',
+                        subtitle: selectedSound.displayName,
+                        onTap: () => _showSoundPicker(),
+                      );
+                    },
+                  ),
                   _buildSwitchTile(
                     icon: Icons.notifications_outlined,
                     title: 'Sound',
@@ -371,6 +384,91 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ),
       ),
     );
+  }
+
+  void _showSoundPicker() {
+    final currentSound = ref.read(soundSelectionProvider);
+    final soundService = ref.read(soundServiceProvider);
+    final availableSounds = NotificationSound.values;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).cardColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'Notification Sound',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+            ...availableSounds.map((sound) => ListTile(
+                  leading: Icon(Icons.music_note, color: PingTheme.primaryRed),
+                  title: Text(sound.displayName),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Play button for preview
+                      IconButton(
+                        icon: Icon(
+                          Icons.play_circle_outline,
+                          color: PingTheme.primaryRed,
+                        ),
+                        onPressed: () {
+                          HapticFeedback.selectionClick();
+                          soundService.previewSound(sound);
+                        },
+                        tooltip: 'Preview sound',
+                      ),
+                      const SizedBox(width: 8),
+                      // Check mark if selected
+                      if (currentSound == sound)
+                        Icon(Icons.check, color: PingTheme.primaryRed)
+                      else
+                        const SizedBox(width: 24),
+                    ],
+                  ),
+                  onTap: () async {
+                    // Preview the sound first
+                    await soundService.previewSound(sound);
+
+                    // Wait a moment for the sound to start
+                    await Future.delayed(const Duration(milliseconds: 300));
+
+                    // Update the selected sound
+                    await ref
+                        .read(soundSelectionProvider.notifier)
+                        .setSound(sound);
+
+                    // Update the notification service
+                    NotificationService.instance.setNotificationSound(sound);
+
+                    if (mounted) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content:
+                              Text('Sound changed to ${sound.displayName}'),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    }
+                  },
+                )),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    ).whenComplete(() {
+      // Stop any playing preview when modal is closed
+      soundService.stopPreview();
+    });
   }
 
   void _showThemePicker() {
