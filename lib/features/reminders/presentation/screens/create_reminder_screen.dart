@@ -7,6 +7,7 @@ import 'package:ping/app/theme/ping_theme.dart';
 import 'package:ping/features/reminders/domain/reminder.dart';
 import 'package:ping/features/reminders/domain/recurrence_rule.dart';
 import 'package:ping/features/reminders/presentation/providers/reminders_provider.dart';
+import 'package:ping/core/monetization/entitlement_provider.dart';
 
 /// Create reminder screen - neumorphic design
 class CreateReminderScreen extends ConsumerStatefulWidget {
@@ -544,6 +545,59 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
       return;
     }
 
+    // Check free tier limit
+    final remindersAsync = ref.read(remindersProvider);
+    final currentCount = remindersAsync.value?.length ?? 0;
+    final canCreate = ref.read(canCreateReminderProvider(currentCount));
+
+    if (!canCreate) {
+      // Show upgrade prompt
+      final shouldUpgrade = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Upgrade to Premium'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'You\'ve reached the free tier limit of 10 reminders.',
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Upgrade to Premium for:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              _buildFeatureItem('✨ Unlimited reminders'),
+              _buildFeatureItem('☁️ Cloud sync across devices'),
+              _buildFeatureItem('🎵 Custom notification sounds'),
+              _buildFeatureItem('🎨 Premium themes'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              style: FilledButton.styleFrom(
+                backgroundColor: PingTheme.primaryRed,
+              ),
+              child: const Text('Upgrade Now'),
+            ),
+          ],
+        ),
+      );
+
+      if (shouldUpgrade == true && mounted) {
+        context.push('/paywall');
+      }
+      return;
+    }
+
     setState(() => _isLoading = true);
     HapticFeedback.mediumImpact();
 
@@ -621,5 +675,15 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
       default:
         return RecurrenceType.daily;
     }
+  }
+
+  Widget _buildFeatureItem(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Text(
+        text,
+        style: const TextStyle(fontSize: 14),
+      ),
+    );
   }
 }

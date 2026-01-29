@@ -14,6 +14,7 @@ import 'package:ping/features/auth/presentation/screens/login_screen.dart';
 import 'package:ping/features/auth/presentation/screens/signup_screen.dart';
 import 'package:ping/features/auth/presentation/providers/auth_provider.dart';
 import 'package:ping/features/profile/presentation/screens/profile_screen.dart';
+import 'package:ping/features/monetization/presentation/screens/paywall_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -102,6 +103,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           final id = state.pathParameters['id']!;
           return EditReminderScreen(reminderId: id);
         },
+      ),
+      GoRoute(
+        path: '/paywall',
+        name: 'paywall',
+        builder: (context, state) => const PaywallScreen(),
       ),
     ],
   );

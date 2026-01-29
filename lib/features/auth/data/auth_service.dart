@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:ping/core/monetization/revenue_cat_service.dart';
 
 /// Service for handling user authentication with Supabase
 class AuthService {
@@ -17,6 +18,13 @@ class AuthService {
         password: password,
       );
       debugPrint('AuthService: Sign up successful');
+
+      // Connect RevenueCat to new user
+      if (response.user != null) {
+        await RevenueCatService.instance.setUserId(response.user!.id);
+        debugPrint('AuthService: RevenueCat user ID set for new user');
+      }
+
       return response;
     } catch (e) {
       debugPrint('AuthService: Sign up error: $e');
@@ -36,6 +44,13 @@ class AuthService {
         password: password,
       );
       debugPrint('AuthService: Sign in successful');
+
+      // Connect RevenueCat to user
+      if (response.user != null) {
+        await RevenueCatService.instance.setUserId(response.user!.id);
+        debugPrint('AuthService: RevenueCat user ID set');
+      }
+
       return response;
     } catch (e) {
       debugPrint('AuthService: Sign in error: $e');
@@ -63,6 +78,11 @@ class AuthService {
   Future<void> signOut() async {
     try {
       debugPrint('AuthService: Signing out user');
+
+      // Logout from RevenueCat
+      await RevenueCatService.instance.logout();
+      debugPrint('AuthService: RevenueCat logout successful');
+
       await _supabase.auth.signOut();
       debugPrint('AuthService: Sign out successful');
     } catch (e) {

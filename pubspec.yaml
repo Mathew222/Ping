@@ -46,6 +46,9 @@ dependencies:
   timezone: ^0.10.0
   shared_preferences: ^2.2.2
   audioplayers: ^5.2.1
+  
+  # Monetization
+  purchases_flutter: ^9.10.8  # Latest version, fixes v1 embedding issues
 
 dev_dependencies:
   flutter_test:
