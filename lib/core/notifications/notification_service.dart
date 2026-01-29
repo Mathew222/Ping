@@ -169,7 +169,7 @@ class NotificationService {
     // Use the reminder's last snooze duration, or default to 10 minutes
     final snoozeDuration = reminder.lastSnoozeDuration ?? _lastSnoozeDuration;
 
-    // Android notification with action buttons and custom sound
+    // Android notification with action buttons
     final androidDetails = AndroidNotificationDetails(
       'ping_reminders',
       'Ping Reminders',
@@ -177,8 +177,9 @@ class NotificationService {
       importance: Importance.max,
       priority: Priority.max,
       playSound: true,
-      sound: RawResourceAndroidNotificationSound(
-          _currentSound.androidResourceName),
+      // Use default notification sound instead of custom sound
+      // Custom sounds require adding files to android/app/src/main/res/raw/
+      // sound: RawResourceAndroidNotificationSound(_currentSound.androidResourceName),
       enableVibration: true,
       category: AndroidNotificationCategory.reminder,
       fullScreenIntent: true,

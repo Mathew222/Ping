@@ -635,7 +635,18 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
       debugPrint(
           'CreateReminderScreen: Creating reminder "${reminder.title}" for ${reminder.triggerAt}');
 
-      await ref.read(reminderActionsProvider.notifier).create(reminder);
+      debugPrint(
+          'CreateReminderScreen: About to call reminderActionsProvider.create()');
+      try {
+        await ref.read(reminderActionsProvider.notifier).create(reminder);
+        debugPrint(
+            'CreateReminderScreen: reminderActionsProvider.create() completed');
+      } catch (e, st) {
+        debugPrint(
+            'CreateReminderScreen: Error from reminderActionsProvider: $e');
+        debugPrint('CreateReminderScreen: Stack trace: $st');
+        rethrow;
+      }
 
       debugPrint('CreateReminderScreen: Reminder created successfully');
 
