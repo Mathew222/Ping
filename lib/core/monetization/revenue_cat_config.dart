@@ -23,6 +23,10 @@ class RevenueCatConfig {
   // Free tier limits
   static const int freeReminderLimit = 2; // Changed to 2 for easy testing
 
+  // Debug/Testing flags
+  static const bool mockPremiumForTesting =
+      true; // Set to true to test premium features
+
   // Feature flags
   static const bool enableCloudSyncForFree = false;
   static const bool enableCustomSoundsForFree = false;

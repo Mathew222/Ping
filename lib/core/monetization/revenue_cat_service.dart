@@ -60,6 +60,12 @@ class RevenueCatService {
 
   /// Check if user has premium subscription
   bool isPremium() {
+    // Mock premium for testing
+    if (RevenueCatConfig.mockPremiumForTesting) {
+      debugPrint('RevenueCat: Using mock premium (testing mode)');
+      return true;
+    }
+
     if (_currentCustomerInfo == null) return false;
 
     final entitlements = _currentCustomerInfo!.entitlements.all;

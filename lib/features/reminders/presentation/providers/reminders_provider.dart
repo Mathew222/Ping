@@ -137,10 +137,17 @@ class ReminderActionsNotifier extends StateNotifier<AsyncValue<void>> {
   Future<void> createReminder(Reminder reminder) async {
     state = const AsyncValue.loading();
     try {
+      debugPrint(
+          'ReminderActionsNotifier: Creating reminder "${reminder.title}"');
       await _repository.createReminder(reminder);
+      debugPrint(
+          'ReminderActionsNotifier: Repository create complete, scheduling notification...');
       await _notifications.scheduleReminder(reminder);
+      debugPrint(
+          'ReminderActionsNotifier: Notification scheduled successfully');
       state = const AsyncValue.data(null);
     } catch (e, st) {
+      debugPrint('ReminderActionsNotifier: Error creating reminder: $e');
       state = AsyncValue.error(e, st);
     }
   }
