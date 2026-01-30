@@ -195,6 +195,7 @@ class NotificationService {
       enableVibration: true,
       category: AndroidNotificationCategory.reminder,
       fullScreenIntent: true,
+      icon: 'ic_notification', // Custom notification icon
       actions: [
         const AndroidNotificationAction(
           'complete',
@@ -306,6 +307,7 @@ class NotificationService {
           enableVibration: false,
           autoCancel: true,
           timeoutAfter: 3000, // Auto-dismiss after 3 seconds
+          icon: 'ic_notification', // Custom notification icon
         ),
         iOS: const DarwinNotificationDetails(
           presentAlert: true,
