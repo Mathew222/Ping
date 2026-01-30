@@ -47,12 +47,6 @@ class _CreateReminderScreenState extends ConsumerState<CreateReminderScreen> {
           onTap: () => context.pop(),
         ),
         title: const Text('Create'),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: _buildNeumorphicButton(Icons.more_horiz),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
