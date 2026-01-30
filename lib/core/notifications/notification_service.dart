@@ -80,20 +80,32 @@ class NotificationService {
     debugPrint('NotificationService: Initialized successfully');
   }
 
-  Future<void> _createNotificationChannel() async {
-    const channel = AndroidNotificationChannel(
-      'ping_reminders',
-      'Ping Reminders',
-      description: 'Reminder notifications from Ping',
-      importance: Importance.high,
-      playSound: true,
-      enableVibration: true,
-    );
+  /// Get the channel ID for a specific sound
+  String _getChannelIdForSound(NotificationSound sound) {
+    return 'ping_reminders_${sound.fileName}';
+  }
 
-    await _plugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
+  Future<void> _createNotificationChannel() async {
+    // Create a separate channel for each sound
+    // This allows users to change sounds without recreating channels
+    for (final sound in NotificationSound.values) {
+      final channel = AndroidNotificationChannel(
+        _getChannelIdForSound(sound),
+        'Ping Reminders - ${sound.displayName}',
+        description: 'Reminder notifications with ${sound.displayName} sound',
+        importance: Importance.high,
+        playSound: true,
+        sound: RawResourceAndroidNotificationSound(sound.androidResourceName),
+        enableVibration: true,
+      );
+
+      await _plugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.createNotificationChannel(channel);
+
+      debugPrint('Created notification channel for ${sound.displayName}');
+    }
   }
 
   /// Schedule a reminder notification
@@ -170,16 +182,16 @@ class NotificationService {
     final snoozeDuration = reminder.lastSnoozeDuration ?? _lastSnoozeDuration;
 
     // Android notification with action buttons
+    // Use the channel that matches the current sound selection
     final androidDetails = AndroidNotificationDetails(
-      'ping_reminders',
+      _getChannelIdForSound(
+          _currentSound), // Dynamic channel based on selected sound
       'Ping Reminders',
       channelDescription: 'Reminder notifications from Ping',
       importance: Importance.max,
       priority: Priority.max,
       playSound: true,
-      // Use default notification sound instead of custom sound
-      // Custom sounds require adding files to android/app/src/main/res/raw/
-      // sound: RawResourceAndroidNotificationSound(_currentSound.androidResourceName),
+      // Sound is already configured in the channel, no need to specify here
       enableVibration: true,
       category: AndroidNotificationCategory.reminder,
       fullScreenIntent: true,
@@ -284,7 +296,8 @@ class NotificationService {
       'Snoozed for ${CustomSnoozePicker.formatDuration(minutes)}',
       NotificationDetails(
         android: AndroidNotificationDetails(
-          'ping_reminders',
+          _getChannelIdForSound(NotificationSound
+              .gentleChime), // Use gentle chime for confirmations
           'Ping Reminders',
           channelDescription: 'Reminder notifications from Ping',
           importance: Importance.low,
