@@ -55,39 +55,14 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
           reminderDate.day == _selectedDate.day;
     }).toList();
 
-    // Group reminders by time of day and sort each group
-    // Sort: active reminders first (newest to oldest), then completed reminders (newest to oldest)
-    List<Reminder> sortReminders(List<Reminder> reminders) {
-      final active = reminders.where((r) => !r.isCompleted).toList()
-        ..sort((a, b) =>
-            b.triggerAt.compareTo(a.triggerAt)); // Descending (newest first)
-      final completed = reminders.where((r) => r.isCompleted).toList()
-        ..sort((a, b) =>
-            b.triggerAt.compareTo(a.triggerAt)); // Descending (newest first)
-      return [...active, ...completed];
-    }
-
-    final morning = sortReminders(filteredReminders
-        .where((r) => r.triggerAt.hour < 12)
-        .toList()
-        .cast<Reminder>());
-    final afternoon = sortReminders(filteredReminders
-        .where((r) => r.triggerAt.hour >= 12 && r.triggerAt.hour < 17)
-        .toList()
-        .cast<Reminder>());
-    final evening = sortReminders(filteredReminders
-        .where((r) => r.triggerAt.hour >= 17)
-        .toList()
-        .cast<Reminder>());
-
-    // Debug: Print sorted order
-    if (afternoon.isNotEmpty) {
-      debugPrint('Afternoon reminders sorted:');
-      for (var r in afternoon) {
-        debugPrint(
-            '  ${r.title} - ${r.triggerAt} - completed: ${r.isCompleted}');
-      }
-    }
+    // Sort all reminders: active first (newest to oldest), then completed (newest to oldest)
+    final active = filteredReminders.where((r) => !r.isCompleted).toList()
+      ..sort((a, b) =>
+          b.triggerAt.compareTo(a.triggerAt)); // Descending (newest first)
+    final completed = filteredReminders.where((r) => r.isCompleted).toList()
+      ..sort((a, b) =>
+          b.triggerAt.compareTo(a.triggerAt)); // Descending (newest first)
+    final allReminders = [...active, ...completed];
 
     final completedToday = filteredReminders.where((r) => r.isCompleted).length;
     final totalToday = filteredReminders.length;
@@ -141,18 +116,15 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
           ),
         ),
 
-        // Morning section
-        if (morning.isNotEmpty) ...[
-          SliverToBoxAdapter(
-            child: _buildSectionHeader('Morning'),
-          ),
+        // All reminders section
+        if (allReminders.isNotEmpty) ...[
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) => Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
                 child: Dismissible(
-                  key: Key(morning[index].id),
+                  key: Key(allReminders[index].id),
                   direction: DismissDirection.horizontal,
                   background: Container(
                     margin: const EdgeInsets.symmetric(vertical: 4),
@@ -180,7 +152,8 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                       builder: (BuildContext context) {
                         return AlertDialog(
                           title: const Text('Delete Reminder'),
-                          content: Text('Delete "${morning[index].title}"?'),
+                          content:
+                              Text('Delete "${allReminders[index].title}"?'),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.of(context).pop(false),
@@ -200,150 +173,13 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                   onDismissed: (direction) {
                     ref
                         .read(reminderActionsProvider.notifier)
-                        .delete(morning[index].id);
+                        .delete(allReminders[index].id);
                   },
-                  child: ReminderCard(reminder: morning[index], index: index),
+                  child:
+                      ReminderCard(reminder: allReminders[index], index: index),
                 ),
               ),
-              childCount: morning.length,
-            ),
-          ),
-        ],
-
-        // Evening section (moved before Afternoon so new evening reminders appear higher)
-        if (evening.isNotEmpty) ...[
-          SliverToBoxAdapter(
-            child: _buildSectionHeader('Evening'),
-          ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) => Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
-                child: Dismissible(
-                  key: Key(evening[index].id),
-                  direction: DismissDirection.horizontal,
-                  background: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    decoration: BoxDecoration(
-                      color: PingTheme.primaryRed,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    alignment: Alignment.centerLeft,
-                    padding: const EdgeInsets.only(left: 20),
-                    child: const Icon(Icons.delete, color: Colors.white),
-                  ),
-                  secondaryBackground: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    decoration: BoxDecoration(
-                      color: PingTheme.primaryRed,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.only(right: 20),
-                    child: const Icon(Icons.delete, color: Colors.white),
-                  ),
-                  confirmDismiss: (direction) async {
-                    return await showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Delete Reminder'),
-                          content: Text('Delete "${evening[index].title}"?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(false),
-                              child: const Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(true),
-                              child: Text('Delete',
-                                  style:
-                                      TextStyle(color: PingTheme.primaryRed)),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                  onDismissed: (direction) {
-                    ref
-                        .read(reminderActionsProvider.notifier)
-                        .delete(evening[index].id);
-                  },
-                  child: ReminderCard(reminder: evening[index], index: index),
-                ),
-              ),
-              childCount: evening.length,
-            ),
-          ),
-        ],
-
-        // Afternoon section
-        if (afternoon.isNotEmpty) ...[
-          SliverToBoxAdapter(
-            child: _buildSectionHeader('Afternoon'),
-          ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) => Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
-                child: Dismissible(
-                  key: Key(afternoon[index].id),
-                  direction: DismissDirection.horizontal,
-                  background: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    decoration: BoxDecoration(
-                      color: PingTheme.primaryRed,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    alignment: Alignment.centerLeft,
-                    padding: const EdgeInsets.only(left: 20),
-                    child: const Icon(Icons.delete, color: Colors.white),
-                  ),
-                  secondaryBackground: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    decoration: BoxDecoration(
-                      color: PingTheme.primaryRed,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.only(right: 20),
-                    child: const Icon(Icons.delete, color: Colors.white),
-                  ),
-                  confirmDismiss: (direction) async {
-                    return await showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Delete Reminder'),
-                          content: Text('Delete "${afternoon[index].title}"?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(false),
-                              child: const Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(true),
-                              child: Text('Delete',
-                                  style:
-                                      TextStyle(color: PingTheme.primaryRed)),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                  onDismissed: (direction) {
-                    ref
-                        .read(reminderActionsProvider.notifier)
-                        .delete(afternoon[index].id);
-                  },
-                  child: ReminderCard(reminder: afternoon[index], index: index),
-                ),
-              ),
-              childCount: afternoon.length,
+              childCount: allReminders.length,
             ),
           ),
         ],
