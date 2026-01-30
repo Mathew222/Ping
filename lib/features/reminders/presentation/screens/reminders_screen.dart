@@ -80,6 +80,15 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
         .toList()
         .cast<Reminder>());
 
+    // Debug: Print sorted order
+    if (afternoon.isNotEmpty) {
+      debugPrint('Afternoon reminders sorted:');
+      for (var r in afternoon) {
+        debugPrint(
+            '  ${r.title} - ${r.triggerAt} - completed: ${r.isCompleted}');
+      }
+    }
+
     final completedToday = filteredReminders.where((r) => r.isCompleted).length;
     final totalToday = filteredReminders.length;
     final progressPercent =
