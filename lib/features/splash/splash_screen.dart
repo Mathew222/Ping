@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:math' as math;
+import 'package:ping/app/theme/ping_theme.dart';
 
 /// Optimized animated splash screen
 class SplashScreen extends StatefulWidget {
@@ -54,9 +55,9 @@ class _SplashScreenState extends State<SplashScreen>
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              const Color(0xFF0D5C6B), // Teal
-              const Color(0xFF1A7A8A), // Lighter teal
-              const Color(0xFF267A87), // Medium teal
+              PingTheme.primaryRed,
+              PingTheme.primaryRed.withBlue(180),
+              PingTheme.textSecondary.withValues(alpha: 0.8),
             ],
           ),
         ),
@@ -73,25 +74,23 @@ class _SplashScreenState extends State<SplashScreen>
                 children: [
                   // Logo with glow
                   Container(
-                    width: 120,
-                    height: 120,
+                    width: 100,
+                    height: 100,
                     decoration: BoxDecoration(
+                      color: Colors.white,
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.white.withValues(alpha: 0.3),
-                          blurRadius: 30,
-                          spreadRadius: 10,
+                          color: Colors.white.withValues(alpha: 0.5),
+                          blurRadius: 40,
+                          spreadRadius: 20,
                         ),
                       ],
                     ),
-                    child: ClipOval(
-                      child: Image.asset(
-                        'assets/logo.png',
-                        width: 120,
-                        height: 120,
-                        fit: BoxFit.cover,
-                      ),
+                    child: Icon(
+                      Icons.notifications_active_rounded,
+                      size: 50,
+                      color: PingTheme.primaryRed,
                     ),
                   )
                       .animate(controller: _controller)
